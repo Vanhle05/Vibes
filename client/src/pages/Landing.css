@@ -1,0 +1,376 @@
+.landing {
+  background: transparent; /* Inherit from body to prevent split */
+  color: var(--vibe-text-main);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── WARM AMBIENT LIGHTING ───────── */
+.landing::before {
+  content: "";
+  position: fixed;
+  top: 0; right: 0;
+  width: 70%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 80% 70% at 85% 30%,
+    rgba(var(--vibe-accent-rgb), 0.25) 0%, /* Lowered from 0.4 */
+    rgba(var(--vibe-accent-rgb), 0.1) 40%,
+    transparent 80%
+  );
+  z-index: 0;
+  pointer-events: none;
+  transition: background 0.8s ease;
+}
+
+.landing::after {
+  content: "";
+  position: fixed;
+  bottom: -10%; left: -10%;
+  width: 60%;
+  height: 70%;
+  background: radial-gradient(
+    circle at 30% 70%,
+    rgba(var(--vibe-accent-rgb), 0.15) 0%,
+    transparent 70%
+  );
+  z-index: 0;
+  pointer-events: none;
+  transition: background 0.8s ease;
+}
+
+/* ── HERO ─────────────────────────────────────── */
+.hero {
+  min-height: 60vh; /* Drastically reduced to bring content up */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 140px;
+  padding-bottom: 2rem; /* Reduced padding */
+  padding-left: 8vw;
+  padding-right: 5vw;
+  position: relative;
+  z-index: 10;
+}
+
+/* ── STENCIL NAME ─────────── */
+.hero-name-stencil {
+  font-family: 'Lexend', sans-serif;
+  font-size: clamp(4.5rem, 15vw, 10rem); /* Slightly smaller for elegance */
+  font-weight: 800;
+  line-height: 1.2; /* Extra breathing room for accents across all devices */
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  margin: 0 0 1rem 0;
+  padding: 0.5rem 0;
+  background: linear-gradient(
+    180deg,
+    #ffffff 10%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.6));
+}
+
+/* ── TAGLINE ──────────────────────────────────── */
+.hero-description {
+  font-size: 1.15rem;
+  color: var(--vibe-text-muted);
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0 0 3rem 0;
+  max-width: 480px;
+  text-align: left;
+}
+
+/* ── ACTION BUTTONS ───────────────────────────── */
+.hero-actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-vibe-primary, .btn-vibe-ghost {
+  height: 54px; /* Sleeker height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2.25rem;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-vibe-primary, .btn-vibe-ghost {
+  height: 56px; /* Same height */
+  min-width: 220px; /* Same minimum width for balance */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2.5rem;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-vibe-primary {
+  background: var(--vibe-text-main);
+  color: #000;
+  gap: 0.75rem;
+}
+
+.btn-vibe-ghost {
+  color: var(--vibe-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+}
+
+.btn-vibe-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ── IDENTITY SECTION ─────────────────────────── */
+.identity-section {
+  padding: 0 0 4rem; /* No top padding */
+  margin-top: -3rem; /* Pull everything up significantly */
+  position: relative;
+  z-index: 10;
+}
+
+.bento-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Tighter gap */
+  max-width: 900px;
+  margin: 0 auto;
+  align-items: center;
+  padding: 0 5vw;
+}
+
+.dna-centered-card {
+  width: 100%;
+  max-width: 500px; /* Slightly smaller for better focus */
+  aspect-ratio: 1;
+  background: radial-gradient(circle at center, rgba(var(--vibe-accent-rgb), 0.1), transparent 70%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 40px;
+  border: 1px solid var(--vibe-glass-border);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(var(--vibe-accent-rgb), 0.15);
+}
+
+.dna-aura-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--vibe-accent-glow), transparent 60%);
+  animation: aura-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes aura-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.social-row-card {
+  width: 100%;
+  max-width: 600px; /* Thinner social bar */
+  padding: 1.25rem 2rem; /* Tighter padding */
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--vibe-glass-border);
+  border-radius: 32px;
+}
+
+.social-row-flex {
+  display: flex;
+  gap: 2.25rem; /* Tighter gap */
+  justify-content: center;
+  align-items: center;
+}
+
+.social-icon-box {
+  color: var(--vibe-text-muted);
+  transition: all 0.3s;
+  opacity: 0.7;
+  text-decoration: none;
+  display: flex;
+}
+
+.social-icon-box:hover {
+  transform: scale(1.2) translateY(-3px);
+  opacity: 1;
+  color: var(--vibe-text-main);
+}
+
+/* ── REVEAL MODAL ─────────────────────────────── */
+.reveal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(40px); /* Intense blur for surroundings */
+  -webkit-backdrop-filter: blur(40px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.reveal-card-container {
+  background: transparent; /* No box anymore */
+  border: none;
+  padding: 0;
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  z-index: 100;
+}
+
+.reveal-photo-frame {
+  position: relative;
+  width: 340px;
+  aspect-ratio: 3/4;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6),
+              0 0 60px rgba(var(--vibe-accent-rgb), 0.3); /* Cinematic aura */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transform: perspective(1000px) rotateY(-5deg); /* Slight 3D feel */
+}
+
+.reveal-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reveal-info {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.reveal-info h2 {
+  font-size: 3.5rem;
+  font-family: 'Lexend', sans-serif;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.04em;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-shadow: 0 0 30px rgba(var(--vibe-accent-rgb), 0.6);
+  margin: 0;
+}
+
+.reveal-verified-icon {
+  filter: drop-shadow(0 0 10px var(--vibe-accent));
+  color: var(--vibe-accent);
+}
+
+/* ── REVEAL BACKGROUND LIGHT RAYS ────────── */
+.reveal-rays {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ray {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 200vw; height: 100vh;
+  background: conic-gradient(from 180deg at 50% 50%, transparent, var(--vibe-accent-glow), transparent);
+  opacity: 0.15;
+  transform-origin: center;
+  animation: ray-rotate 20s linear infinite;
+}
+
+@keyframes ray-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.reveal-heart-icon {
+  opacity: 0.9;
+}
+
+
+/* ── FOOTER ───────────────────────────────────── */
+.minimalist-footer {
+  padding: 3rem 0;
+  border-top: 1px solid var(--vibe-glass-border);
+  position: relative;
+  z-index: 10;
+}
+
+.footer-contact-centered {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--vibe-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.contact-link:hover {
+  color: var(--vibe-text-main);
+}
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media (max-width: 768px) {
+  .hero {
+    padding-top: 120px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .hero-name-stencil {
+    font-size: clamp(3.5rem, 18vw, 6rem);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .social-row-flex {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+}
