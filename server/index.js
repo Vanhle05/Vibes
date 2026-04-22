@@ -64,6 +64,24 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString(), version: '1.0.0' });
 });
 
+// Debug user route (Delete this after fixing)
+app.get('/api/auth/debug-user/:email', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    const user = await User.findOne({ email: req.params.email.toLowerCase() }).select('+password');
+    if (!user) return res.json({ found: false });
+    res.json({
+      found: true,
+      email: user.email,
+      loginMethod: user.loginMethod,
+      hasPassword: !!user.password,
+      passwordPrefix: user.password ? user.password.substring(0, 10) : 'none'
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Owner info endpoint (public)
 app.get('/api/owner', (req, res) => {
   res.json({
