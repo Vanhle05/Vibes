@@ -58,9 +58,9 @@ const Navbar = () => {
           </div>
 
           <div className="nav-main-links">
-            <Link to="/explore" className="nav-link">Explore</Link>
             {user ? (
               <>
+                <Link to="/explore" className="nav-link">Explore</Link>
                 {(user.isPaid === true || user.role === 'admin') ? (
                   <>
                     <Link to="/dashboard" className="nav-link">Dashboard</Link>
