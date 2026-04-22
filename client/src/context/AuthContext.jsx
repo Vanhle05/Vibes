@@ -6,7 +6,8 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem('vibes_user');
-    return stored ? JSON.parse(stored) : null;
+    const token = localStorage.getItem('vibes_token');
+    return (stored && token) ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(true);
 
