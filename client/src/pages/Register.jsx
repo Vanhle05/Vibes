@@ -67,11 +67,12 @@ const Register = () => {
 
   useEffect(() => {
     let interval;
-    if (step === 2) {
+    if (step === 2 && orderCode) {
       interval = setInterval(async () => {
         try {
-          const updatedUser = await refreshUser();
-          if (updatedUser.isPaid) {
+          const res = await api.get(`/payment/check/${orderCode}`);
+          if (res.data.status === 'PAID') {
+            await refreshUser();
             setStep(3);
             clearInterval(interval);
           }
@@ -79,7 +80,25 @@ const Register = () => {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [step, refreshUser]);
+  }, [step, orderCode, refreshUser]);
+
+  const handleManualCheck = async () => {
+    if (!orderCode) return;
+    setLoading(true);
+    try {
+      const res = await api.get(`/payment/check/${orderCode}`);
+      if (res.data.status === 'PAID') {
+        await refreshUser();
+        setStep(3);
+      } else {
+        alert('Chưa nhận được thanh toán. Vui lòng đợi 1-2 phút hoặc kiểm tra lại nội dung chuyển khoản.');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
@@ -175,6 +194,15 @@ const Register = () => {
               <div className="payment-help">
                 <AlertCircle size={14} /> Quét mã để tự động nhập nội dung
               </div>
+
+              <button 
+                onClick={handleManualCheck} 
+                className="btn-vibe-secondary" 
+                style={{width: '100%', marginTop: '1.5rem'}}
+                disabled={loading}
+              >
+                {loading ? <Loader2 size={16} className="spinning" /> : 'Tôi đã chuyển khoản'}
+              </button>
             </div>
           </div>
           

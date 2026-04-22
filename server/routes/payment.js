@@ -115,6 +115,31 @@ router.post('/create-link', protect, async (req, res) => {
   }
 });
 
+// GET /api/payment/check/:orderCode — kiểm tra trạng thái thanh toán trực tiếp từ PayOS
+router.get('/check/:orderCode', protect, async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const payment = await Payment.findOne({ orderCode: Number(orderCode) });
+    
+    if (!payment) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    if (payment.status === 'confirmed') return res.json({ status: 'PAID', message: 'Đã thanh toán' });
+
+    // Gọi trực tiếp PayOS để check (Dùng làm fallback cho Webhook)
+    const paymentInfo = await payos.getPaymentLinkInformation(orderCode);
+    
+    if (paymentInfo.status === 'PAID') {
+      const FulfillmentService = require('../services/FulfillmentService');
+      await FulfillmentService.execute(payment.user, payment._id);
+      return res.json({ status: 'PAID', message: 'Kích hoạt thành công!' });
+    }
+
+    res.json({ status: paymentInfo.status, message: 'Chưa nhận được thanh toán' });
+  } catch (err) {
+    console.error('[Check Payment Error]', err);
+    res.status(500).json({ message: 'Lỗi kiểm tra trạng thái' });
+  }
+});
+
 // GET /api/payment/my — lịch sử thanh toán của user
 router.get('/my', protect, async (req, res) => {
   try {
