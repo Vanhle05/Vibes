@@ -80,8 +80,10 @@ router.post('/login', authLimiter, async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
     
-    // Debug log (visible in Vercel function logs)
-    console.log('[LOGIN] email:', email.toLowerCase(), '| user found:', !!user, '| loginMethod:', user?.loginMethod);
+    // Debug specific user
+    if (email.toLowerCase() === 'gotosleep344@gmail.com') {
+      console.log('[DEBUG-LOGIN] User found:', !!user, 'Method:', user?.loginMethod, 'HashedPass:', !!user?.password);
+    }
 
     if (!user) {
       return res.status(401).json({ message: 'Email chưa được đăng ký' });

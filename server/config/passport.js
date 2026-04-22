@@ -7,13 +7,15 @@ const Profile = require('../models/Profile');
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID || 'dummy',
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy',
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: `${BACKEND_URL}/api/auth/google/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      const email = profile.emails[0].value;
+      if (!profile || !profile.emails) {
+        return done(new Error('Google profile missing email'), null);
+      }
       let user = await User.findOne({ email: email.toLowerCase() });
 
       if (!user) {
@@ -35,8 +37,8 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_APP_ID || 'dummy',
-    clientSecret: process.env.FACEBOOK_APP_SECRET || 'dummy',
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: `${BACKEND_URL}/api/auth/facebook/callback`,
     profileFields: ['id', 'displayName', 'emails']
   },
