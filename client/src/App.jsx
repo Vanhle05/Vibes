@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
@@ -9,6 +9,9 @@ import Payment from './pages/Payment';
 import PublicProfile from './pages/PublicProfile';
 import Admin from './pages/Admin';
 import Explore from './pages/Explore';
+import AuthSuccess from './pages/AuthSuccess';
+import Community from './pages/Community';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Protected route — chỉ cho logged in users
 const PrivateRoute = ({ children }) => {
@@ -44,9 +47,6 @@ const GuestRoute = ({ children }) => {
   return children;
 };
 
-import AuthSuccess from './pages/AuthSuccess';
-import Community from './pages/Community';
-
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Landing />} />
@@ -63,13 +63,13 @@ const AppRoutes = () => (
   </Routes>
 );
 
-import { ThemeProvider } from './context/ThemeContext';
-
 const App = () => (
   <BrowserRouter>
     <ThemeProvider>
       <AuthProvider>
-        <AppRoutes />
+        <Suspense fallback={<div style={{ height: '100vh', background: '#030712' }} />}>
+          <AppRoutes />
+        </Suspense>
       </AuthProvider>
     </ThemeProvider>
   </BrowserRouter>
