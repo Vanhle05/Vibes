@@ -4,10 +4,12 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/User');
 const Profile = require('../models/Profile');
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'dummy',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy',
-    callbackURL: "/api/auth/google/callback"
+    callbackURL: `${BACKEND_URL}/api/auth/google/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -35,7 +37,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID || 'dummy',
     clientSecret: process.env.FACEBOOK_APP_SECRET || 'dummy',
-    callbackURL: "/api/auth/facebook/callback",
+    callbackURL: `${BACKEND_URL}/api/auth/facebook/callback`,
     profileFields: ['id', 'displayName', 'emails']
   },
   async (accessToken, refreshToken, profile, done) => {
