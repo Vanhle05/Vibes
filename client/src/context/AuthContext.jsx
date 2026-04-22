@@ -29,14 +29,18 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (token) {
+      console.log('[AUTH] Token found, fetching fresh user data...');
       api.get('/auth/me').then(res => {
+        console.log('[AUTH] User data fetched:', res.data.email, 'isPaid:', res.data.isPaid);
         setUser(res.data);
         localStorage.setItem('vibes_user', JSON.stringify(res.data));
         localStorage.setItem('vibes_last_seen', Date.now().toString());
-      }).catch(() => {
+      }).catch((err) => {
+        console.error('[AUTH] Fetch user failed:', err.response?.data || err.message);
         logout();
       }).finally(() => setLoading(false));
     } else {
+      console.log('[AUTH] No token found.');
       setLoading(false);
     }
 

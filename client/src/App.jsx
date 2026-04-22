@@ -1,5 +1,6 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -13,37 +14,32 @@ import AuthSuccess from './pages/AuthSuccess';
 import Community from './pages/Community';
 import { ThemeProvider } from './context/ThemeContext';
 
-// Protected route — chỉ cho logged in users
+const ErrorFallback = ({ error }) => (
+  <div style={{ padding: '2rem', background: '#030712', color: '#fff', height: '100vh' }}>
+    <h2>Đã có lỗi xảy ra</h2>
+    <pre style={{ color: '#f87171' }}>{error.message}</pre>
+    <button onClick={() => window.location.href = '/'}>Quay lại trang chủ</button>
+  </div>
+);
+
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#030712' }}><div className="spinner" /></div>;
-  
-  // Nếu chưa thanh toán thì bắt buộc phải qua /register (trừ admin)
-  if (user && !user.isPaid && user.role !== 'admin') {
-    return <Navigate to="/register" replace />;
-  }
-  
+  if (user && !user.isPaid && user.role !== 'admin') return <Navigate to="/register" replace />;
   return user ? children : <Navigate to="/login" replace />;
 };
 
-// Admin-only route
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#030712' }}><div className="spinner" /></div>;
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  if (!user || user.role !== 'admin') return <Navigate to="/dashboard" replace />;
   return children;
 };
 
-// Guest-only route (redirect to dashboard if logged in AND paid)
 const GuestRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
-  
-  if (user) {
-    return user.isPaid ? <Navigate to="/dashboard" replace /> : children;
-  }
-  
+  if (user && user.isPaid) return <Navigate to="/dashboard" replace />;
   return children;
 };
 
@@ -51,7 +47,7 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Landing />} />
     <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-    <Route path="/register" element={<Register />} /> {/* Public + Unpaid access */}
+    <Route path="/register" element={<Register />} />
     <Route path="/auth/success" element={<AuthSuccess />} />
     <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
     <Route path="/community" element={<PrivateRoute><Community /></PrivateRoute>} />
@@ -64,15 +60,15 @@ const AppRoutes = () => (
 );
 
 const App = () => (
-  <BrowserRouter>
-    <ThemeProvider>
-      <AuthProvider>
-        <Suspense fallback={<div style={{ height: '100vh', background: '#030712' }} />}>
+  <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <BrowserRouter>
+      <ThemeProvider>
+        <AuthProvider>
           <AppRoutes />
-        </Suspense>
-      </AuthProvider>
-    </ThemeProvider>
-  </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
+  </ErrorBoundary>
 );
 
 export default App;
