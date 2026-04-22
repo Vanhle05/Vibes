@@ -71,12 +71,16 @@ const Register = () => {
       interval = setInterval(async () => {
         try {
           const res = await api.get(`/payment/check/${orderCode}`);
-          if (res.data.status === 'PAID') {
-            await refreshUser();
+          console.log('[Payment Poll] Status:', res.data.status);
+          if (res.data.status === 'PAID' || res.data.status === 'confirmed') {
+            console.log('[Payment Poll] SUCCESS! Moving to success screen.');
             setStep(3);
+            await refreshUser();
             clearInterval(interval);
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error('[Payment Poll Error]', e);
+        }
       }, 3000);
     }
     return () => clearInterval(interval);
@@ -87,14 +91,16 @@ const Register = () => {
     setLoading(true);
     try {
       const res = await api.get(`/payment/check/${orderCode}`);
-      if (res.data.status === 'PAID') {
-        await refreshUser();
+      console.log('[Manual Check] Status:', res.data.status);
+      if (res.data.status === 'PAID' || res.data.status === 'confirmed') {
         setStep(3);
+        await refreshUser();
       } else {
-        alert('Chưa nhận được thanh toán. Vui lòng đợi 1-2 phút hoặc kiểm tra lại nội dung chuyển khoản.');
+        alert('Hệ thống chưa nhận được thanh toán (Trạng thái: ' + res.data.status + '). Vui lòng đợi 1-2 phút để ngân hàng xử lý giao dịch hoặc kiểm tra lại nội dung chuyển khoản.');
       }
     } catch (err) {
-      console.error(err);
+      console.error('[Manual Check Error]', err);
+      alert('Lỗi khi kiểm tra thanh toán. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }

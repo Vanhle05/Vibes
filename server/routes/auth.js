@@ -47,11 +47,25 @@ router.post('/register', authLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Năm sinh không khớp với mã trên CCCD' });
 
     // Checking existence
-    const emailExists = await User.findOne({ email: email.toLowerCase() });
-    if (emailExists) return res.status(409).json({ message: 'Email đã được sử dụng' });
+    const existingUserByEmail = await User.findOne({ email: email.toLowerCase() });
+    if (existingUserByEmail) {
+      if (existingUserByEmail.isPaid) {
+        return res.status(409).json({ message: 'Email đã được sử dụng và đã kích hoạt Premium' });
+      } else {
+        await User.findByIdAndDelete(existingUserByEmail._id);
+        await Profile.findOneAndDelete({ user: existingUserByEmail._id });
+      }
+    }
     
-    const cccdExists = await User.findOne({ cccd: cccdClean });
-    if (cccdExists) return res.status(409).json({ message: 'Số CCCD này đã được đăng ký' });
+    const existingUserByCccd = await User.findOne({ cccd: cccdClean });
+    if (existingUserByCccd) {
+      if (existingUserByCccd.isPaid) {
+        return res.status(409).json({ message: 'Số CCCD này đã được đăng ký cho một tài khoản Premium' });
+      } else {
+        await User.findByIdAndDelete(existingUserByCccd._id);
+        await Profile.findOneAndDelete({ user: existingUserByCccd._id });
+      }
+    }
 
     const user = await User.create({ 
       name, email: email.toLowerCase(), password, 
