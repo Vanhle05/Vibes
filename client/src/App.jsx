@@ -44,11 +44,14 @@ const GuestRoute = ({ children }) => {
   return children;
 };
 
+import AuthSuccess from './pages/AuthSuccess';
+
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Landing />} />
     <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
     <Route path="/register" element={<Register />} /> {/* Public + Unpaid access */}
+    <Route path="/auth/success" element={<AuthSuccess />} />
     <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
     <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
     <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

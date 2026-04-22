@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Lexend:wght@300;400;500;600&display=swap');
+
 :root {
   --vibe-accent: #fbbf24;
   --vibe-accent-rgb: 251, 191, 36;
@@ -30,7 +32,7 @@ html, body {
 }
 
 body {
-  font-family: 'Lexend', sans-serif;
+  font-family: 'Outfit', 'Lexend', sans-serif;
   color: var(--vibe-text-main);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;

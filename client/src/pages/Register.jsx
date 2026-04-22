@@ -9,11 +9,6 @@ import {
 import ParticleCanvas from '../components/ParticleCanvas';
 import './Auth.css';
 
-const BANK_BIN = '970418';
-const BANK_ACCOUNT = '6722600547';
-const ACCOUNT_NAME = 'LE VIET ANH';
-const AMOUNT = 100000;
-
 const Register = () => {
   const { register, login, user: authUser } = useAuth();
   const navigate = useNavigate();
@@ -34,6 +29,28 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderCode, setOrderCode] = useState(null);
+  
+  // Payment info from API
+  const [paymentInfo, setPaymentInfo] = useState({
+    bankBin: '',
+    bankAccount: '',
+    bankOwner: '',
+    price: 2000,
+    nextOrderNumber: 1
+  });
+
+  // Fetch payment info on mount
+  useEffect(() => {
+    api.get('/payment/info').then(res => {
+      setPaymentInfo({
+        bankBin: res.data.bankBin,
+        bankAccount: res.data.bankAccount,
+        bankOwner: res.data.bankOwner,
+        price: res.data.price,
+        nextOrderNumber: res.data.nextOrderNumber
+      });
+    }).catch(err => console.error('Lỗi tải thông tin thanh toán:', err));
+  }, []);
 
   // If already logged in but not paid, skip to step 2
   useEffect(() => {
@@ -88,8 +105,8 @@ const Register = () => {
     }
   };
 
-  const transferNote = `VIBES ${orderCode || 'PAYMENT'}`;
-  const qrUrl = `https://img.vietqr.io/image/${BANK_BIN}-${BANK_ACCOUNT}-compact2.png?amount=${AMOUNT}&addInfo=${transferNote}&accountName=${ACCOUNT_NAME}`;
+  const transferNote = `yeuvanhle${paymentInfo.nextOrderNumber || ''}`;
+  const qrUrl = `https://img.vietqr.io/image/${paymentInfo.bankBin}-${paymentInfo.bankAccount}-compact2.png?amount=${paymentInfo.price}&addInfo=${transferNote}&accountName=${paymentInfo.bankOwner}`;
 
   if (step === 3) return (
     <div className="auth-page">
@@ -114,28 +131,34 @@ const Register = () => {
         <div className="auth-box animate-slide-up">
           <div className="auth-header">
             <h1 className="auth-title">Kích hoạt Premium</h1>
-            <p className="auth-subtitle-vibe">PHÍ KÍCH HOẠT DUY NHẤT: 100.000 VNĐ</p>
+            <p className="auth-subtitle-vibe">PHÍ KÍCH HOẠT DUY NHẤT: {paymentInfo.price?.toLocaleString()} VNĐ</p>
           </div>
 
           <div className="payment-grid">
-            <div className="qr-section">
-              <div className="qr-container">
-                <img src={qrUrl} alt="VietQR" className="qr-image" />
-                <div className="qr-overlay-scan"></div>
+              <div className="qr-section">
+                <div className="qr-container">
+                  {paymentInfo.bankBin && paymentInfo.bankAccount ? (
+                    <img src={qrUrl} alt="VietQR" className="qr-image" />
+                  ) : (
+                    <div className="qr-placeholder-vibe">
+                      <Loader2 size={32} className="spinning" />
+                    </div>
+                  )}
+                  <div className="qr-overlay-scan"></div>
+                </div>
+                <div className="payment-status">
+                   Đang chờ chuyển khoản...
+                </div>
               </div>
-              <div className="payment-status">
-                <Loader2 size={16} className="spinning" /> Đang chờ chuyển khoản...
-              </div>
-            </div>
 
             <div className="payment-info-box">
               <div className="info-item">
                 <span className="label">Chủ tài khoản</span>
-                <span className="value uppercase">{ACCOUNT_NAME}</span>
+                <span className="value uppercase">{paymentInfo.bankOwner}</span>
               </div>
               <div className="info-item">
                 <span className="label">Số tài khoản</span>
-                <span className="value">{BANK_ACCOUNT}</span>
+                <span className="value">{paymentInfo.bankAccount}</span>
               </div>
               <div className="info-item highlight">
                 <span className="label">Nội dung (Bắt buộc)</span>
@@ -143,7 +166,7 @@ const Register = () => {
               </div>
               <div className="info-item">
                 <span className="label">Số tiền</span>
-                <span className="value highlight-text">100.000đ</span>
+                <span className="value highlight-text">{paymentInfo.price?.toLocaleString()}đ</span>
               </div>
               
               <div className="payment-help">
@@ -165,6 +188,10 @@ const Register = () => {
       <ParticleCanvas density={40} />
       <div className="auth-container">
         <div className="auth-box animate-slide-up">
+          {/* Back to Home Button Inside Box */}
+          <Link to="/" className="btn-back-home">
+            Về với vanh <Heart size={16} fill="currentColor" className="heart-shadow" />
+          </Link>
           <div className="auth-header">
             <div className="auth-logo">
               <Sparkles size={24} color="var(--vibe-accent)" fill="var(--vibe-accent)" />

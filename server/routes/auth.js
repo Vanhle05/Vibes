@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Profile = require('../models/Profile');
+const passport = require('passport');
 const { authLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
@@ -97,7 +98,22 @@ router.get('/me', require('../middleware/auth').protect, async (req, res) => {
   res.json({ id: user._id, name: user.name, email: user.email, role: user.role, isPaid: user.isPaid, username: user.username, paymentStatus: user.paymentStatus });
 });
 
-// POST /api/auth/social-login
+// --- Google OAuth ---
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+  const token = signToken(req.user._id);
+  res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
+});
+
+// --- Facebook OAuth ---
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+
+router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
+  const token = signToken(req.user._id);
+  res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
+});
+
 router.post('/social-login', async (req, res) => {
   try {
     const { name, email, platform } = req.body;

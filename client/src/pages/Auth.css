@@ -4,15 +4,17 @@
 */
 
 :root {
-  --auth-bg: #050505;
-  --card-bg: rgba(18, 18, 18, 0.7);
+  --auth-bg: #030712;
+  --card-bg: rgba(10, 15, 29, 0.7);
   --card-border: rgba(255, 255, 255, 0.08);
-  --input-bg: rgba(255, 255, 255, 0.04);
-  --input-focus: rgba(0, 180, 255, 0.2);
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-focus: rgba(56, 189, 248, 0.15);
   --text-dim: #9ca3af;
   --accent-main: #38bdf8;
   --accent-glow: rgba(56, 189, 248, 0.4);
-  --font-main: 'Outfit', sans-serif;
+  --font-main: 'Outfit', 'Lexend', sans-serif;
+  --fb-color: #1877F2;
+  --google-color: #EA4335;
 }
 
 .auth-page {
@@ -76,11 +78,13 @@
 }
 
 .auth-title {
-  font-size: 2.25rem;
+  font-size: 2.75rem;
   font-weight: 800;
   color: #fff;
-  letter-spacing: -0.04em;
-  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem;
+  line-height: 1.25; /* Fix font clipping */
+  padding-top: 0.1em;
 }
 
 .auth-subtitle-vibe {
@@ -191,11 +195,12 @@
 .btn-vibe-primary {
   background: var(--accent-main);
   color: #000;
-  font-weight: 800;
+  font-weight: 700; /* Reduced from 800 to fix Vietnamese font issue */
   padding: 1.1rem;
   border-radius: 18px;
   border: none;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  font-family: var(--font-main); /* Ensure font-family is applied */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -203,6 +208,7 @@
   gap: 0.75rem;
   transition: all 0.3s;
   margin-top: 1rem;
+  line-height: 1.2; /* Fix font clipping */
 }
 
 .btn-vibe-primary:hover {
@@ -233,7 +239,115 @@
   font-weight: 500;
 }
 
-/* ── PAYMENT GRID ────────── */
+/* Social Login Redesign */
+.social-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.social-divider::before, .social-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-social::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-social:hover {
+  transform: translateY(-4px);
+  border-color: currentColor;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px -10px currentColor;
+}
+
+.btn-social.google { color: var(--google-color); }
+.btn-social.facebook { color: var(--fb-color); }
+
+.btn-social svg {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-social span {
+  position: relative;
+  z-index: 1;
+  color: #fff; /* Keep text white for better readability */
+}
+
+/* Home Button Inside Box */
+.btn-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin: -1.5rem auto 2rem;
+  width: fit-content;
+}
+
+.btn-back-home:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.heart-shadow {
+  color: #f43f5e;
+  filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.6));
+  animation: heart-pulse 2s infinite;
+}
+
+@keyframes heart-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.4)); }
+  50% { transform: scale(1.2); filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.8)); }
+}
 .payment-grid {
   display: grid;
   grid-template-columns: 240px 1fr;

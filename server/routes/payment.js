@@ -35,15 +35,22 @@ const upload = multer({
 });
 
 // GET /api/payment/info — trả về thông tin thanh toán
-router.get('/info', (req, res) => {
-  res.json({
-    bankName: process.env.BANK_NAME || 'Vietcombank',
-    bankAccount: process.env.BANK_ACCOUNT || '1234567890',
-    bankOwner: process.env.BANK_OWNER || 'NGUYEN VAN A',
-    momo: process.env.MOMO || '0901234567',
-    price: Number(process.env.PRICE_VND) || 199000,
-    currency: 'VNĐ'
-  });
+router.get('/info', async (req, res) => {
+  try {
+    const paymentCount = await Payment.countDocuments();
+    res.json({
+      bankName: process.env.BANK_NAME,
+      bankAccount: process.env.BANK_ACCOUNT,
+      bankOwner: process.env.BANK_OWNER,
+      bankBin: process.env.BANK_BIN,
+      momo: process.env.MOMO,
+      price: Number(process.env.PRICE_VND),
+      nextOrderNumber: paymentCount + 1,
+      currency: 'VNĐ'
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // POST /api/payment/submit — gửi yêu cầu thanh toán kèm bill
