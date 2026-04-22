@@ -20,7 +20,7 @@ app.enable('trust proxy');
 connectDB();
 
 // Security middleware
-// app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true
