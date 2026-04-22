@@ -3,11 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
-// const passport = require('passport');
+const passport = require('passport');
 const session = require('express-session');
 // const MongoStoreModule = require('connect-mongo');
 // const MongoStore = MongoStoreModule.default || MongoStoreModule;
-// require('./config/passport');
+require('./config/passport');
 const connectDB = require('./config/db');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
@@ -37,6 +37,8 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   }
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 // Rate limiting
