@@ -58,10 +58,18 @@ const Navbar = () => {
           </div>
 
           <div className="nav-main-links">
+            <Link to="/explore" className="nav-link">Explore</Link>
             {user ? (
               <>
-                <Link to="/dashboard" className="nav-link">Dashboard</Link>
-                {user.role === 'admin' && <Link to="/admin" className="nav-link">Admin</Link>}
+                {(user.isPaid === true || user.role === 'admin') ? (
+                  <>
+                    <Link to="/dashboard" className="nav-link">Dashboard</Link>
+                    <Link to="/community" className="nav-link">Community</Link>
+                    {user.role === 'admin' && <Link to="/admin" className="nav-link">Admin</Link>}
+                  </>
+                ) : (
+                  <Link to="/register" className="nav-link text-accent">Nâng cấp</Link>
+                )}
                 <button onClick={logout} className="btn-logout-minimal">Đăng xuất</button>
               </>
             ) : (
