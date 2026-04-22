@@ -31,11 +31,11 @@ app.use(session({
   secret: process.env.JWT_SECRET || 'vibes_secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
+  /* store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
     collectionName: 'sessions',
     ttl: 14 * 24 * 60 * 60 // 14 days
-  }),
+  }), */
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
