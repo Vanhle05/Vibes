@@ -79,8 +79,29 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng nhập email và mật khẩu' });
 
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-    if (!user || !(await user.comparePassword(password)))
+    
+    // Debug log (visible in Vercel function logs)
+    console.log('[LOGIN] email:', email.toLowerCase(), '| user found:', !!user, '| loginMethod:', user?.loginMethod);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Email chưa được đăng ký' });
+    }
+
+    // User đăng ký bằng Google/Facebook không có password thật
+    if (user.loginMethod !== 'vibes') {
+      return res.status(401).json({ message: `Tài khoản này đăng nhập bằng ${user.loginMethod}. Vui lòng dùng nút đăng nhập tương ứng.` });
+    }
+
+    if (!user.password) {
       return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    console.log('[LOGIN] password match:', isMatch);
+    
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
+    }
 
     const token = signToken(user._id);
     res.json({
@@ -88,6 +109,7 @@ router.post('/login', authLimiter, async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, isPaid: user.isPaid, username: user.username }
     });
   } catch (err) {
+    console.error('[LOGIN ERROR]', err.message);
     res.status(500).json({ message: 'Lỗi server', error: err.message });
   }
 });
