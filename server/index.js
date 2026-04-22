@@ -64,18 +64,42 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString(), version: '1.0.0' });
 });
 
-// Debug user route (Delete this after fixing)
-app.get('/api/auth/debug-user/:email', async (req, res) => {
+// Diagnostic route
+app.get('/api/diag', async (req, res) => {
   try {
+    const mongoose = require('mongoose');
     const User = require('./models/User');
-    const user = await User.findOne({ email: req.params.email.toLowerCase() }).select('+password');
-    if (!user) return res.json({ found: false });
+    const email = req.query.email;
+    let userInfo = null;
+    
+    if (email) {
+      const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+      if (user) {
+        userInfo = {
+          found: true,
+          method: user.loginMethod,
+          hasPass: !!user.password,
+          passLen: user.password ? user.password.length : 0
+        };
+      } else {
+        userInfo = { found: false };
+      }
+    }
+
     res.json({
-      found: true,
-      email: user.email,
-      loginMethod: user.loginMethod,
-      hasPassword: !!user.password,
-      passwordPrefix: user.password ? user.password.substring(0, 10) : 'none'
+      env: {
+        NODE_ENV: process.env.NODE_ENV,
+        BACKEND_URL: process.env.BACKEND_URL ? 'set' : 'MISSING',
+        CLIENT_URL: process.env.CLIENT_URL ? 'set' : 'MISSING',
+        MONGO_URI: process.env.MONGO_URI ? 'set' : 'MISSING',
+        GOOGLE: process.env.GOOGLE_CLIENT_ID ? 'set' : 'MISSING',
+        FACEBOOK: process.env.FACEBOOK_APP_ID ? 'set' : 'MISSING'
+      },
+      db: {
+        readyState: mongoose.connection.readyState,
+        host: mongoose.connection.host
+      },
+      user: userInfo
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
