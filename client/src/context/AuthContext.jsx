@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post('/auth/login', { email, password });
     localStorage.setItem('vibes_token', res.data.token);
     localStorage.setItem('vibes_user', JSON.stringify(res.data.user));
+    localStorage.setItem('vibes_last_seen', Date.now().toString());
     setUser(res.data.user);
     return res.data.user;
   };
@@ -78,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post('/auth/social-login', { name, email, platform });
     localStorage.setItem('vibes_token', res.data.token);
     localStorage.setItem('vibes_user', JSON.stringify(res.data.user));
+    localStorage.setItem('vibes_last_seen', Date.now().toString());
     setUser(res.data.user);
     return res.data.user;
   };
@@ -92,6 +94,7 @@ export const AuthProvider = ({ children }) => {
     const res = await api.get('/auth/me');
     setUser(res.data);
     localStorage.setItem('vibes_user', JSON.stringify(res.data));
+    localStorage.setItem('vibes_last_seen', Date.now().toString());
     return res.data;
   };
 

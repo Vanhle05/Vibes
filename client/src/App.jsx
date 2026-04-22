@@ -45,6 +45,7 @@ const GuestRoute = ({ children }) => {
 };
 
 import AuthSuccess from './pages/AuthSuccess';
+import Community from './pages/Community';
 
 const AppRoutes = () => (
   <Routes>
@@ -53,6 +54,7 @@ const AppRoutes = () => (
     <Route path="/register" element={<Register />} /> {/* Public + Unpaid access */}
     <Route path="/auth/success" element={<AuthSuccess />} />
     <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+    <Route path="/community" element={<PrivateRoute><Community /></PrivateRoute>} />
     <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
     <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
     <Route path="/explore" element={<Explore />} />
