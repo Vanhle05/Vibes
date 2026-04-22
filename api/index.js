@@ -1,3 +1,8 @@
-// Vercel Serverless Function entry point
-// Vercel tự động route tất cả /api/* requests đến file này
-module.exports = require('../server/index');
+const express = require('express');
+const app = express();
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok from bare api/index.js' });
+});
+
+module.exports = app;
