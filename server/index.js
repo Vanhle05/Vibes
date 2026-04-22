@@ -5,8 +5,8 @@ const helmet = require('helmet');
 const path = require('path');
 const passport = require('passport');
 const session = require('express-session');
-// const MongoStoreModule = require('connect-mongo');
-// const MongoStore = MongoStoreModule.default || MongoStoreModule;
+const MongoStoreModule = require('connect-mongo');
+const MongoStore = MongoStoreModule.default || MongoStoreModule;
 require('./config/passport');
 const connectDB = require('./config/db');
 const { apiLimiter } = require('./middleware/rateLimiter');
@@ -31,6 +31,11 @@ app.use(session({
   secret: process.env.JWT_SECRET || 'vibes_secret',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions',
+    ttl: 14 * 24 * 60 * 60 // 14 days
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
