@@ -10,7 +10,7 @@ import ParticleCanvas from '../components/ParticleCanvas';
 import './Auth.css';
 
 const Register = () => {
-  const { register, login, user: authUser } = useAuth();
+  const { register, login, user: authUser, refreshUser } = useAuth();
   const navigate = useNavigate();
   
   const [step, setStep] = useState(1); 
@@ -68,8 +68,8 @@ const Register = () => {
     if (step === 2) {
       interval = setInterval(async () => {
         try {
-          const res = await api.get('/auth/me');
-          if (res.data.isPaid) {
+          const updatedUser = await refreshUser();
+          if (updatedUser.isPaid) {
             setStep(3);
             clearInterval(interval);
           }
@@ -77,7 +77,7 @@ const Register = () => {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [step]);
+  }, [step, refreshUser]);
 
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
