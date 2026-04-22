@@ -123,41 +123,57 @@ router.get('/me', require('../middleware/auth').protect, async (req, res) => {
 });
 
 // --- Google OAuth ---
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  const token = signToken(req.user._id);
+router.get('/google', (req, res, next) => {
+  const host = req.get('host');
+  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
+  const callbackURL = `${protocol}://${host}/api/auth/google/callback`;
   
-  // High-reliability redirect: Detect current host to avoid localhost issues
-  const currentHost = req.get('host');
-  let clientUrl = process.env.CLIENT_URL || '';
-  
-  // If we are on Vercel or any live host, use the request host instead of a potentially stale env var
-  if (currentHost && !currentHost.includes('localhost')) {
-    clientUrl = `${req.protocol}://${currentHost}`;
-  } else if (!clientUrl) {
-    clientUrl = `${req.protocol}://${currentHost}`;
-  }
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    callbackURL
+  })(req, res, next);
+});
 
-  res.redirect(`${clientUrl}/auth/success?token=${token}`);
+router.get('/google/callback', (req, res, next) => {
+  const host = req.get('host');
+  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
+  const callbackURL = `${protocol}://${host}/api/auth/google/callback`;
+
+  passport.authenticate('google', { 
+    failureRedirect: '/login',
+    callbackURL 
+  }, (err, user) => {
+    if (err || !user) return res.redirect('/login');
+    const token = signToken(user._id);
+    res.redirect(`/auth/success?token=${token}`);
+  })(req, res, next);
 });
 
 // --- Facebook OAuth ---
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+router.get('/facebook', (req, res, next) => {
+  const host = req.get('host');
+  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
+  const callbackURL = `${protocol}://${host}/api/auth/facebook/callback`;
 
-router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
-  const token = signToken(req.user._id);
-  
-  const currentHost = req.get('host');
-  let clientUrl = process.env.CLIENT_URL || '';
-  
-  if (currentHost && !currentHost.includes('localhost')) {
-    clientUrl = `${req.protocol}://${currentHost}`;
-  } else if (!clientUrl) {
-    clientUrl = `${req.protocol}://${currentHost}`;
-  }
+  passport.authenticate('facebook', { 
+    scope: ['email'],
+    callbackURL
+  })(req, res, next);
+});
 
-  res.redirect(`${clientUrl}/auth/success?token=${token}`);
+router.get('/facebook/callback', (req, res, next) => {
+  const host = req.get('host');
+  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
+  const callbackURL = `${protocol}://${host}/api/auth/facebook/callback`;
+
+  passport.authenticate('facebook', { 
+    failureRedirect: '/login',
+    callbackURL
+  }, (err, user) => {
+    if (err || !user) return res.redirect('/login');
+    const token = signToken(user._id);
+    res.redirect(`/auth/success?token=${token}`);
+  })(req, res, next);
 });
 
 router.post('/social-login', async (req, res) => {
