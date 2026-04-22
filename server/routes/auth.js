@@ -96,8 +96,8 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
     }
 
-    const isMatch = await user.comparePassword(password);
-    console.log('[LOGIN] password match:', isMatch);
+    const isMatch = await user.comparePassword(password.trim());
+    console.log('[LOGIN] password match result:', isMatch, '| input length:', password.trim().length);
     
     if (!isMatch) {
       return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
