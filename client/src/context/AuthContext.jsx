@@ -13,18 +13,52 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('vibes_token');
+    
+    // --- Session Persistence Logic (2 Minutes Window) ---
+    const lastSeen = localStorage.getItem('vibes_last_seen');
+    const now = Date.now();
+    
+    if (token && lastSeen && (now - parseInt(lastSeen)) > 120000) {
+      // More than 2 minutes inactive since last seen -> Force Logout
+      localStorage.removeItem('vibes_token');
+      localStorage.removeItem('vibes_user');
+      localStorage.removeItem('vibes_last_seen');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     if (token) {
       api.get('/auth/me').then(res => {
         setUser(res.data);
         localStorage.setItem('vibes_user', JSON.stringify(res.data));
+        localStorage.setItem('vibes_last_seen', Date.now().toString());
       }).catch(() => {
-        localStorage.removeItem('vibes_token');
-        localStorage.removeItem('vibes_user');
-        setUser(null);
+        logout();
       }).finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
+
+    // Update lastSeen when user interacts or tab visibility changes
+    const updateActivity = () => {
+      if (localStorage.getItem('vibes_token')) {
+        localStorage.setItem('vibes_last_seen', Date.now().toString());
+      }
+    };
+
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        updateActivity();
+      }
+    });
+
+    window.addEventListener('beforeunload', updateActivity);
+    
+    return () => {
+      window.removeEventListener('visibilitychange', updateActivity);
+      window.removeEventListener('beforeunload', updateActivity);
+    };
   }, []);
 
   const login = async (email, password) => {
