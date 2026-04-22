@@ -57,6 +57,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/payment', require('./routes/payment'));
 app.use('/api/webhook', require('./routes/webhook'));
+app.use('/api/community', require('./routes/community'));
 app.use('/api/admin', require('./routes/admin'));
 
 // Health check
