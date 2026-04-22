@@ -38,6 +38,7 @@ const Register = () => {
     price: 2000,
     nextOrderNumber: 1
   });
+  const [payOSData, setPayOSData] = useState(null);
 
   // Fetch payment info on mount
   useEffect(() => {
@@ -59,6 +60,7 @@ const Register = () => {
       // Fetch or generate an orderCode if missing
       api.post('/payment/create-link').then(res => {
         setOrderCode(res.data?.orderCode);
+        setPayOSData(res.data);
       }).catch(() => setOrderCode(Date.now()));
     }
   }, [authUser, step]);
@@ -97,6 +99,7 @@ const Register = () => {
       
       const payRes = await api.post('/payment/create-link');
       setOrderCode(payRes.data?.orderCode || Date.now());
+      setPayOSData(payRes.data);
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng ký thất bại. Email hoặc CCCD có thể đã tồn tại.');
@@ -105,8 +108,8 @@ const Register = () => {
     }
   };
 
-  const transferNote = `yeuvanhle${paymentInfo.nextOrderNumber || ''}`;
-  const qrUrl = `https://img.vietqr.io/image/${paymentInfo.bankBin}-${paymentInfo.bankAccount}-compact2.png?amount=${paymentInfo.price}&addInfo=${transferNote}&accountName=${paymentInfo.bankOwner}`;
+  const transferNote = payOSData?.description || `yeuvanhle${paymentInfo.nextOrderNumber || ''}`;
+  const qrUrl = payOSData?.qrCode || `https://img.vietqr.io/image/${paymentInfo.bankBin}-${paymentInfo.bankAccount}-compact2.png?amount=${paymentInfo.price}&addInfo=${transferNote}&accountName=${paymentInfo.bankOwner}`;
 
   if (step === 3) return (
     <div className="auth-page">
@@ -137,7 +140,7 @@ const Register = () => {
           <div className="payment-grid">
               <div className="qr-section">
                 <div className="qr-container">
-                  {paymentInfo.bankBin && paymentInfo.bankAccount ? (
+                  {(payOSData?.qrCode || (paymentInfo.bankBin && paymentInfo.bankAccount)) ? (
                     <img src={qrUrl} alt="VietQR" className="qr-image" />
                   ) : (
                     <div className="qr-placeholder-vibe">
