@@ -28,7 +28,8 @@ const AuthSuccess = () => {
             if (userData.role === 'admin' || userData.isPaid) {
               window.location.href = '/dashboard';
             } else {
-              window.location.href = '/register';
+              // Tài khoản thường được vào trang Explore (Preview)
+              window.location.href = '/explore';
             }
           } else {
             navigate('/login');
