@@ -27,7 +27,6 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-/* 
 app.use(session({
   secret: process.env.JWT_SECRET || 'vibes_secret',
   resave: false,
@@ -38,9 +37,6 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   }
 }));
-app.use(passport.initialize());
-app.use(passport.session());
-*/
 
 
 // Rate limiting
