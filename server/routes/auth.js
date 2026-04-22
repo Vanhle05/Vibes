@@ -127,7 +127,12 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   const token = signToken(req.user._id);
-  res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
+  // Determine redirect URL dynamically to avoid localhost issues on Vercel
+  let clientUrl = process.env.CLIENT_URL || '';
+  if (process.env.NODE_ENV === 'production' && (clientUrl.includes('localhost') || !clientUrl)) {
+    clientUrl = `${req.protocol}://${req.get('host')}`;
+  }
+  res.redirect(`${clientUrl}/auth/success?token=${token}`);
 });
 
 // --- Facebook OAuth ---
@@ -135,7 +140,11 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
 
 router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
   const token = signToken(req.user._id);
-  res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
+  let clientUrl = process.env.CLIENT_URL || '';
+  if (process.env.NODE_ENV === 'production' && (clientUrl.includes('localhost') || !clientUrl)) {
+    clientUrl = `${req.protocol}://${req.get('host')}`;
+  }
+  res.redirect(`${clientUrl}/auth/success?token=${token}`);
 });
 
 router.post('/social-login', async (req, res) => {

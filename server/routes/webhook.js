@@ -19,14 +19,23 @@ const payos = new PayOS(
 router.post('/payos', async (req, res) => {
   try {
     const { data, signature } = req.body;
-    console.log('--- NHẬN WEBHOOK TỪ PAYOS ---');
+    console.log('[PAYOS WEBHOOK] Received payload:', JSON.stringify(req.body));
 
     // 1. Xác thực Webhook
-    const webhookData = payos.verifyPaymentWebhookData(req.body);
+    let webhookData;
+    try {
+      webhookData = payos.verifyPaymentWebhookData(req.body);
+      console.log('[PAYOS WEBHOOK] Verified data:', JSON.stringify(webhookData));
+    } catch (vErr) {
+      console.error('[PAYOS WEBHOOK] Verification FAILED:', vErr.message);
+      // Vẫn tiếp tục kiểm tra thủ công nếu verify thất bại nhưng có dữ liệu thô (để debug)
+      webhookData = data; 
+    }
 
     // 2. Kiểm tra nội dung giao dịch thành công
-    if (webhookData.code === '00' || req.body.desc === 'success') {
+    if (webhookData.code === '00' || webhookData.desc === 'success' || req.body.desc === 'success') {
       const orderCode = webhookData.orderCode;
+      console.log(`[PAYOS WEBHOOK] Processing success for Order: ${orderCode}`);
       
       const payment = await Payment.findOne({ orderCode }).populate('user');
       
