@@ -127,11 +127,18 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   const token = signToken(req.user._id);
-  // Determine redirect URL dynamically to avoid localhost issues on Vercel
+  
+  // High-reliability redirect: Detect current host to avoid localhost issues
+  const currentHost = req.get('host');
   let clientUrl = process.env.CLIENT_URL || '';
-  if (process.env.NODE_ENV === 'production' && (clientUrl.includes('localhost') || !clientUrl)) {
-    clientUrl = `${req.protocol}://${req.get('host')}`;
+  
+  // If we are on Vercel or any live host, use the request host instead of a potentially stale env var
+  if (currentHost && !currentHost.includes('localhost')) {
+    clientUrl = `${req.protocol}://${currentHost}`;
+  } else if (!clientUrl) {
+    clientUrl = `${req.protocol}://${currentHost}`;
   }
+
   res.redirect(`${clientUrl}/auth/success?token=${token}`);
 });
 
@@ -140,10 +147,16 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
 
 router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
   const token = signToken(req.user._id);
+  
+  const currentHost = req.get('host');
   let clientUrl = process.env.CLIENT_URL || '';
-  if (process.env.NODE_ENV === 'production' && (clientUrl.includes('localhost') || !clientUrl)) {
-    clientUrl = `${req.protocol}://${req.get('host')}`;
+  
+  if (currentHost && !currentHost.includes('localhost')) {
+    clientUrl = `${req.protocol}://${currentHost}`;
+  } else if (!clientUrl) {
+    clientUrl = `${req.protocol}://${currentHost}`;
   }
+
   res.redirect(`${clientUrl}/auth/success?token=${token}`);
 });
 

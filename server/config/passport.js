@@ -16,10 +16,10 @@ passport.use(new GoogleStrategy({
       if (!profile || !profile.emails) {
         return done(new Error('Google profile missing email'), null);
       }
+      const email = profile.emails[0].value;
       let user = await User.findOne({ email: email.toLowerCase() });
 
       if (!user) {
-        // Create new user if doesn't exist
         user = await User.create({
           name: profile.displayName,
           email: email.toLowerCase(),
