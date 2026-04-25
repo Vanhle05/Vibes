@@ -1,4 +1,5 @@
 require('dotenv').config();
+const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -31,14 +32,16 @@ app.use(session({
   secret: process.env.JWT_SECRET || 'vibes_secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: 'sessions',
-    ttl: 14 * 24 * 60 * 60 // 14 days
-  }),
+  ...(process.env.MONGO_URI ? {
+    store: MongoStore.create({
+      clientPromise: mongoose.connect(process.env.MONGO_URI).then(m => m.connection.getClient()),
+      collectionName: 'sessions',
+      ttl: 14 * 24 * 60 * 60 // 14 days
+    })
+  } : {}),
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production' || process.env.VERCEL === '1',
+    sameSite: (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') ? 'none' : 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   }
 }));
@@ -129,7 +132,7 @@ app.use((err, req, res, next) => {
 module.exports = app;
 
 // Local dev server
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const PORT = process.env.PORT || 5000;
   const server = app.listen(PORT, () => {
     console.log(`🚀 Vibes Server running on port ${PORT}`);
@@ -137,8 +140,8 @@ if (process.env.NODE_ENV !== 'production') {
 
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`❌ Port ${PORT} đang bị chiếm. Đang thử lại sau 1 giây...`);
-      setTimeout(() => { server.close(); server.listen(PORT); }, 1000);
+      console.error(`❌ Port ${PORT} đang bị chiếm. Vui lòng tắt process đang dùng port ${PORT} hoặc chạy lại. Process sẽ exit.`);
+      process.exit(1);
     } else {
       console.error('❌ Lỗi server:', err);
       process.exit(1);

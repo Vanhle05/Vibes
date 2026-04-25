@@ -7,8 +7,8 @@ const Profile = require('../models/Profile');
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientID: process.env.GOOGLE_CLIENT_ID || 'missing_google_client_id',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'missing_google_secret',
     callbackURL: `${BACKEND_URL}/api/auth/google/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
@@ -37,8 +37,8 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_APP_ID,
-    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    clientID: process.env.FACEBOOK_APP_ID || 'missing_facebook_app_id',
+    clientSecret: process.env.FACEBOOK_APP_SECRET || 'missing_facebook_secret',
     callbackURL: `${BACKEND_URL}/api/auth/facebook/callback`,
     profileFields: ['id', 'displayName', 'emails']
   },

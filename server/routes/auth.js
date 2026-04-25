@@ -7,7 +7,7 @@ const { authLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET || 'vibes_secret', { expiresIn: '7d' });
 
 // POST /api/auth/register
 router.post('/register', authLimiter, async (req, res) => {
