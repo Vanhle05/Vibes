@@ -1,5 +1,4 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -28,23 +27,27 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(session({
+
+// Session - chỉ dùng MongoStore khi có MONGO_URI
+const sessionOptions = {
   secret: process.env.JWT_SECRET || 'vibes_secret',
   resave: false,
   saveUninitialized: false,
-  ...(process.env.MONGO_URI ? {
-    store: MongoStore.create({
-      clientPromise: mongoose.connect(process.env.MONGO_URI).then(m => m.connection.getClient()),
-      collectionName: 'sessions',
-      ttl: 14 * 24 * 60 * 60 // 14 days
-    })
-  } : {}),
   cookie: {
-    secure: process.env.NODE_ENV === 'production' || process.env.VERCEL === '1',
-    sameSite: (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
+    sameSite: (process.env.NODE_ENV === 'production' || !!process.env.VERCEL) ? 'none' : 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   }
-}));
+};
+if (process.env.MONGO_URI) {
+  sessionOptions.store = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions',
+    ttl: 14 * 24 * 60 * 60,
+    autoRemove: 'native'
+  });
+}
+app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 
