@@ -1,0 +1,9 @@
+/* Reusing Privacy Policy styles for consistency */
+@import './PrivacyPolicy.css';
+
+.privacy-logo h1 {
+  background: linear-gradient(135deg, #fff 0%, #f87171 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

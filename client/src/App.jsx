@@ -12,6 +12,8 @@ import Admin from './pages/Admin';
 import Explore from './pages/Explore';
 import AuthSuccess from './pages/AuthSuccess';
 import Community from './pages/Community';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import DataDeletion from './pages/DataDeletion';
 import { ThemeProvider } from './context/ThemeContext';
 
 const ErrorFallback = ({ error }) => (
@@ -55,6 +57,8 @@ const AppRoutes = () => (
     <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
     <Route path="/explore" element={<Explore />} />
     <Route path="/profile/:username" element={<PublicProfile />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+    <Route path="/user-data-deletion" element={<DataDeletion />} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );

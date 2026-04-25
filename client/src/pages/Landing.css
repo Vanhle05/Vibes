@@ -42,13 +42,13 @@
 
 /* ── HERO ─────────────────────────────────────── */
 .hero {
-  min-height: 60vh; /* Drastically reduced to bring content up */
+  min-height: 80vh; /* Increased to give more space */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   padding-top: 140px;
-  padding-bottom: 2rem; /* Reduced padding */
+  padding-bottom: 4rem; /* Increased padding */
   padding-left: 8vw;
   padding-right: 5vw;
   position: relative;
@@ -146,8 +146,8 @@
 
 /* ── IDENTITY SECTION ─────────────────────────── */
 .identity-section {
-  padding: 0 0 4rem; /* No top padding */
-  margin-top: -3rem; /* Pull everything up significantly */
+  padding: 4rem 0; /* Added top padding */
+  margin-top: 0; /* Removed negative margin to prevent sticking */
   position: relative;
   z-index: 10;
 }
