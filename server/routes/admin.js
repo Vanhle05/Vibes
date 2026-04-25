@@ -95,11 +95,23 @@ router.post('/users', async (req, res) => {
 // PUT /api/admin/users/:id — cập nhật user
 router.put('/users/:id', async (req, res) => {
   try {
-    const { name, email, isPaid, isActive } = req.body;
-    const user = await User.findByIdAndUpdate(req.params.id, {
-      name, email, isPaid, isActive,
-      paymentStatus: isPaid ? 'confirmed' : 'none'
-    }, { new: true });
+    const { name, email, password, isPaid, isActive } = req.body;
+    
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.name = name;
+    user.email = email;
+    user.isPaid = isPaid;
+    user.isActive = isActive;
+    user.paymentStatus = isPaid ? 'confirmed' : 'none';
+    
+    if (password && password.trim().length > 0) {
+      user.password = password.trim();
+    }
+    
+    await user.save();
+    
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });

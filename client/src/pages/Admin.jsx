@@ -159,7 +159,14 @@ const Admin = () => {
              <form onSubmit={modal === 'create' ? handleCreate : handleUpdate}>
                 <input className="input-field" placeholder="Tên" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
                 <input className="input-field" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-                {modal === 'create' && <input className="input-field" type="password" placeholder="Mật khẩu" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required />}
+                <input 
+                  className="input-field" 
+                  type="password" 
+                  placeholder={modal === 'create' ? "Mật khẩu" : "Mật khẩu mới (bỏ trống nếu không đổi)"} 
+                  value={formData.password} 
+                  onChange={e => setFormData({...formData, password: e.target.value})} 
+                  required={modal === 'create'} 
+                />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '0.5rem 0' }}>
                   <ToggleSwitch 
                     label="Đã thanh toán" 
