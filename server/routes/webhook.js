@@ -7,9 +7,9 @@ const router = express.Router();
 
 // Khởi tạo PayOS
 const payos = new PayOS(
-  process.env.PAYOS_CLIENT_ID, 
-  process.env.PAYOS_API_KEY, 
-  process.env.PAYOS_CHECKSUM_KEY
+  process.env.PAYOS_CLIENT_ID || 'missing_client_id', 
+  process.env.PAYOS_API_KEY || 'missing_api_key', 
+  process.env.PAYOS_CHECKSUM_KEY || 'missing_checksum_key'
 );
 
 /**
