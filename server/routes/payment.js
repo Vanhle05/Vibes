@@ -89,12 +89,16 @@ router.post('/create-link', protect, async (req, res) => {
 
     const orderCode = Number(Date.now().toString().slice(-9)); // PayOS prefers smaller integers for some plans
     const amount = Number(process.env.PRICE_VND) || 100000;
+    
+    // Tự động lấy URL nếu biến môi trường bị thiếu trên Vercel
+    const clientUrl = process.env.CLIENT_URL || `https://${req.get('host')}`;
+    
     const body = {
       orderCode,
       amount,
       description: 'Vibes Premium',
-      returnUrl: `${process.env.CLIENT_URL}/dashboard?status=success`,
-      cancelUrl: `${process.env.CLIENT_URL}/dashboard?status=cancelled`,
+      returnUrl: `${clientUrl}/dashboard?status=success`,
+      cancelUrl: `${clientUrl}/dashboard?status=cancelled`,
     };
 
     const paymentLinkRes = await payos.createPaymentLink(body);
