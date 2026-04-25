@@ -55,15 +55,14 @@ const Register = () => {
 
   // If already logged in but not paid, skip to step 2
   useEffect(() => {
-    if (authUser && !authUser.isPaid && step === 1) {
+    if (authUser && !authUser.isPaid && step === 1 && !orderCode && !payOSData) {
       setStep(2);
-      // Fetch or generate an orderCode if missing
       api.post('/payment/create-link').then(res => {
         setOrderCode(res.data?.orderCode);
         setPayOSData(res.data);
       }).catch(() => setOrderCode(Date.now()));
     }
-  }, [authUser, step]);
+  }, [authUser, step, orderCode, payOSData]);
 
   useEffect(() => {
     let interval;
@@ -133,8 +132,10 @@ const Register = () => {
     }
   };
 
-  const transferNote = payOSData?.description || `yeuvanhle${paymentInfo.nextOrderNumber || ''}`;
-  const qrUrl = payOSData?.qrCode || `https://img.vietqr.io/image/${paymentInfo.bankBin}-${paymentInfo.bankAccount}-compact2.png?amount=${paymentInfo.price}&addInfo=${transferNote}&accountName=${paymentInfo.bankOwner}`;
+  const transferNote = payOSData?.description || `VIBES ${authUser?.name?.toUpperCase().replace(/ /g, '') || ''}`;
+  const qrUrl = payOSData?.qrCode 
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(payOSData.qrCode)}`
+    : `https://img.vietqr.io/image/${paymentInfo.bankBin}-${paymentInfo.bankAccount}-compact2.png?amount=${paymentInfo.price}&addInfo=${transferNote}&accountName=${paymentInfo.bankOwner}`;
 
   if (step === 3) return (
     <div className="auth-page">
