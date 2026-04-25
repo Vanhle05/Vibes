@@ -145,8 +145,8 @@ const Register = () => {
         </div>
         <h1 className="auth-title">Chào mừng gia nhập!</h1>
         <p style={{color: 'rgba(255,255,255,0.6)', marginBottom: '2.5rem', lineHeight: '1.6'}}>Tài khoản của bạn đã được kích hoạt vĩnh viễn. Hãy bắt đầu kiến tạo bản sắc số của riêng bạn ngay bây giờ.</p>
-        <button onClick={() => navigate('/dashboard')} className="btn-vibe-primary" style={{width: '100%'}}>
-          Vào Dashboard ngay <ArrowRight size={18} />
+        <button onClick={() => navigate('/explore')} className="btn-vibe-primary" style={{width: '100%'}}>
+          Khám phá Vibes ngay <ArrowRight size={18} />
         </button>
       </div>
     </div>

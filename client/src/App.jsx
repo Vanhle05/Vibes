@@ -42,7 +42,7 @@ const AdminRoute = ({ children }) => {
 const GuestRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (user && user.isPaid) return <Navigate to="/explore" replace />;
+  if (user) return <Navigate to="/explore" replace />;
   return children;
 };
 

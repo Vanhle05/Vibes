@@ -22,12 +22,8 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      const user = await login(form.email, form.password);
-      if (user.isPaid || user.role === 'admin') {
-        navigate('/explore');
-      } else {
-        navigate('/register');
-      }
+      await login(form.email, form.password);
+      navigate('/explore');
     } catch (err) {
       setError(err.response?.data?.message || 'Email hoặc mật khẩu không đúng');
     } finally {
