@@ -119,6 +119,15 @@ const Payment = () => {
 
               {method === 'bank' ? (
                 <div className="bank-details">
+                  <div className="qr-section">
+                    <img 
+                      src={`https://img.vietqr.io/image/${info.bankBin}-${info.bankAccount}-compact2.png?amount=${info.price}&addInfo=${content}&accountName=${info.bankOwner}`} 
+                      alt="VietQR" 
+                      className="qr-code"
+                    />
+                    <div className="qr-hint">Quét mã để chuyển khoản nhanh</div>
+                  </div>
+                  
                   <div className="bank-row">
                     <span className="bank-label">Ngân hàng</span>
                     <span className="bank-value">{info.bankName}</span>
@@ -143,6 +152,14 @@ const Payment = () => {
                 </div>
               ) : (
                 <div className="bank-details">
+                  <div className="qr-section">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=2|99|${info.momo}|||0|0|${info.price}|${content}|transfer_myqr`} 
+                      alt="Momo QR" 
+                      className="qr-code"
+                    />
+                    <div className="qr-hint">Quét mã Momo</div>
+                  </div>
                   <div className="bank-row">
                     <span className="bank-label">Số Momo</span>
                     <div className="bank-copy">
