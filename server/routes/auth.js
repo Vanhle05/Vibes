@@ -138,9 +138,7 @@ router.get('/me', require('../middleware/auth').protect, async (req, res) => {
 
 // --- Google OAuth ---
 router.get('/google', (req, res, next) => {
-  const host = req.get('host');
-  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
-  const callbackURL = `${protocol}://${host}/api/auth/google/callback`;
+  const callbackURL = `${process.env.BACKEND_URL}/api/auth/google/callback`;
   
   passport.authenticate('google', { 
     scope: ['profile', 'email'],
@@ -150,9 +148,7 @@ router.get('/google', (req, res, next) => {
 });
 
 router.get('/google/callback', (req, res, next) => {
-  const host = req.get('host');
-  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
-  const callbackURL = `${protocol}://${host}/api/auth/google/callback`;
+  const callbackURL = `${process.env.BACKEND_URL}/api/auth/google/callback`;
 
   passport.authenticate('google', { 
     failureRedirect: '/login',
@@ -166,9 +162,7 @@ router.get('/google/callback', (req, res, next) => {
 
 // --- Facebook OAuth ---
 router.get('/facebook', (req, res, next) => {
-  const host = req.get('host');
-  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
-  const callbackURL = `${protocol}://${host}/api/auth/facebook/callback`;
+  const callbackURL = `${process.env.BACKEND_URL}/api/auth/facebook/callback`;
 
   passport.authenticate('facebook', { 
     scope: ['email'],
@@ -177,9 +171,7 @@ router.get('/facebook', (req, res, next) => {
 });
 
 router.get('/facebook/callback', (req, res, next) => {
-  const host = req.get('host');
-  const protocol = (host.includes('localhost') || host.includes('127.0.0.1')) ? 'http' : 'https';
-  const callbackURL = `${protocol}://${host}/api/auth/facebook/callback`;
+  const callbackURL = `${process.env.BACKEND_URL}/api/auth/facebook/callback`;
 
   passport.authenticate('facebook', { 
     failureRedirect: '/login',
