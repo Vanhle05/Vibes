@@ -1,5 +1,5 @@
 const express = require('express');
-const { PayOS } = require('@payos/node');
+const PayOS = require('@payos/node');
 const FulfillmentService = require('../services/FulfillmentService');
 const Payment = require('../models/Payment');
 

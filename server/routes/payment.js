@@ -5,7 +5,7 @@ const fs = require('fs');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
-const { PayOS } = require('@payos/node');
+const PayOS = require('@payos/node');
 
 const router = express.Router();
 const payos = new PayOS(
