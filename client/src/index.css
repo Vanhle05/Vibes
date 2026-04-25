@@ -27,23 +27,22 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: var(--vibe-bg);
+  background-color: #030712 !important; /* Base color only on HTML root */
   min-height: 100%;
 }
 
 body {
   font-family: 'Outfit', 'Lexend', sans-serif;
   color: var(--vibe-text-main);
+  background: transparent !important; /* Body MUST be transparent for z-index: -1 */
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
-  transition: background-color 0.8s ease;
 }
 
-/* Global Font Fix: Prevent clipping of accents in all headers */
-h1, h2, h3, h4, h5, h6, span, p, a, button {
-  line-height: 1.4; 
-  padding-top: 0.1em;
-  padding-bottom: 0.1em;
+#root {
+  position: relative;
+  z-index: 1; /* Content layer above background */
+  background: transparent;
 }
 
 .container {

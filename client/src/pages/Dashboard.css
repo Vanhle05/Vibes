@@ -1,7 +1,7 @@
 /* Dashboard Styles Overhaul */
 
 .dashboard {
-  background: #030712;
+  background: transparent;
   min-height: 100vh;
 }
 
@@ -176,6 +176,14 @@
 .mock-screen {
   height: 100%;
   padding: 2rem 1rem;
+  position: relative;
+}
+
+.mock-dna-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.4;
 }
 
 .mock-avatar {
@@ -202,7 +210,77 @@
 .t-3 { background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.2), transparent); }
 
 /* Responsive */
+/* Premium Enhancements */
+.premium-dash .glass-card {
+  border-color: rgba(251, 191, 36, 0.2);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.bg-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.bg-option {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bg-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: 0.3s;
+  background: #1e293b;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-option:hover .bg-thumb {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.bg-option.active .bg-thumb {
+  border-color: #fbbf24;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+}
+
+.bg-option span {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.bg-option.active span {
+  color: #fbbf24;
+}
+
+/* Thumbs for backgrounds */
+.thumb-0 { background: #030712; }
+.thumb-1 { background: radial-gradient(circle, #1e1b4b, #030712); }
+.thumb-2 { background: #080808; border: 1px solid rgba(251,191,36,0.1); }
+.thumb-3 { background: linear-gradient(to bottom, #011a14, #064e3b); }
+.thumb-4 { background: radial-gradient(circle, #05162a, #030712); }
+.thumb-5 { background: conic-gradient(from 180deg at 50% 50%, #1e1b4b, #312e81); }
+.thumb-6 { background: #1a0b2e; }
+.thumb-7 { background: #1a0505; }
+.thumb-8 { background: #021a12; }
+.thumb-9 { background: #0f172a; }
+.thumb-10 { background: #000; border: 1px solid rgba(255,255,255,0.1); }
+
+.appearance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
 @media (max-width: 1100px) {
-  .dashboard-layout { grid-template-columns: 1fr; }
+  .dashboard-layout { grid-template-columns: 1fr; padding-top: 120px; }
   .dash-preview-panel { display: none; }
 }

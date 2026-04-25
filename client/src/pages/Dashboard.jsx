@@ -10,6 +10,11 @@ import {
 } from 'lucide-react';
 import DynamicLogo from '../components/DynamicLogo';
 import Navbar from '../components/Navbar';
+import PremiumBackground from '../components/PremiumBackground';
+import PremiumHubBadge from '../components/PremiumHubBadge';
+import TemplateVisual from '../components/TemplateVisual';
+import { Loader2 } from 'lucide-react';
+import { CATEGORIES, PALETTES } from '../constants/templates.jsx';
 import './Dashboard.css';
 
 const THEMES = [
@@ -41,6 +46,8 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [avatarPreview, setAvatarPreview] = useState(null);
   const fileRef = useRef();
+
+  const isPremium = user?.isPaid || user?.role === 'admin';
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -106,7 +113,8 @@ const Dashboard = () => {
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>;
 
   return (
-    <div className="dashboard">
+    <div className={`dashboard ${isPremium ? 'premium-dash' : ''}`}>
+      <PremiumBackground id={form.animatedBackground || 11} />
       <Navbar />
       {toast && (
         <div className={`toast toast-${toast.type} animate-slide-up`}>
@@ -130,6 +138,7 @@ const Dashboard = () => {
             <div className="dash-tagline">{form.tagline || 'Chưa có tagline'}</div>
             
             <div className="sidebar-actions">
+              {isPremium && <PremiumHubBadge size="sm" className="mb-4" />}
               <button className="btn btn-sm btn-ghost" onClick={() => navigate('/explore')}>
                 <Layout size={14} /> Đổi mẫu thiết kế
               </button>
@@ -151,6 +160,11 @@ const Dashboard = () => {
             <button className={`dash-nav-item ${activeTab === 'appearance' ? 'active' : ''}`} onClick={() => setActiveTab('appearance')}>
               <Palette size={16} /> Giao diện
             </button>
+            {isPremium && (
+              <button className={`dash-nav-item ${activeTab === 'background' ? 'active' : ''}`} onClick={() => setActiveTab('background')}>
+                <Sparkles size={16} /> Nền động
+              </button>
+            )}
           </nav>
         </aside>
 
@@ -205,22 +219,53 @@ const Dashboard = () => {
 
             {activeTab === 'appearance' && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="dash-panel glass-card">
-                <div className="form-group">
-                  <label>Mẫu thiết kế hiện tại: <span style={{color: 'var(--accent-main)'}}>#{form.templateId || 'Cơ bản'}</span></label>
-                  <button className="btn btn-ghost" style={{marginTop: '0.5rem'}} onClick={() => navigate('/explore')}>
-                    <Layout size={16} /> Chọn mẫu khác từ Explore
-                  </button>
+                <div className="appearance-grid">
+                   <div className="form-group">
+                      <label>Mẫu thiết kế hiện tại: <span style={{color: 'var(--vibe-accent)'}}>#{form.templateId || 'Cơ bản'}</span></label>
+                      <button className="btn btn-ghost" style={{marginTop: '0.5rem'}} onClick={() => navigate('/explore')}>
+                        <Layout size={16} /> Chọn mẫu khác từ Explore
+                      </button>
+                   </div>
+                   
+                   <div className="form-group">
+                      <label>Màu chủ đạo</label>
+                      <div className="color-picker-wrap">
+                        <input type="color" value={form.coverColor || '#38bdf8'} onChange={e => set('coverColor', e.target.value)} />
+                        <span>{form.coverColor || '#38bdf8'}</span>
+                      </div>
+                   </div>
                 </div>
-                <div className="form-group">
-                  <label>Màu chủ đạo</label>
-                  <div className="color-picker-wrap">
-                    <input type="color" value={form.coverColor || '#38bdf8'} onChange={e => set('coverColor', e.target.value)} />
-                    <span>{form.coverColor || '#38bdf8'}</span>
-                  </div>
-                </div>
+
                 <div className="panel-footer">
                   <button className="btn-vibe-primary" onClick={handleSave} disabled={saving}>
                     <Save size={18} /> Lưu giao diện
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'background' && isPremium && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="dash-panel glass-card">
+                <div className="form-group">
+                  <label>Chọn hiệu ứng nền toàn giao diện (Premium Only)</label>
+                  <p className="text-sm opacity-60 mb-4">Hiệu ứng này sẽ hiển thị trên toàn bộ trang cá nhân của bạn.</p>
+                  <div className="bg-selector-grid">
+                    {[...Array(11).keys()].map(i => (
+                      <div 
+                        key={i} 
+                        className={`bg-option ${form.animatedBackground === i ? 'active' : ''}`}
+                        onClick={() => set('animatedBackground', i)}
+                      >
+                        <div className={`bg-thumb thumb-${i}`}></div>
+                        <span>{i === 0 ? 'Mặc định' : `Hiệu ứng ${i}`}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="panel-footer">
+                  <button className="btn-vibe-primary" onClick={handleSave} disabled={saving}>
+                    <Save size={18} /> Lưu hiệu ứng nền
                   </button>
                 </div>
               </motion.div>
@@ -232,6 +277,20 @@ const Dashboard = () => {
           <div className="preview-label">BẢN XEM TRƯỚC</div>
           <div className="mock-phone" style={{ background: THEMES.find(t => t.id === form.theme)?.color || '#030712' }}>
             <div className="mock-screen">
+              {form.templateId && (
+                <div className="mock-dna-bg">
+                  <TemplateVisual template={{ 
+                    id: form.templateId, 
+                    palette: PALETTES[(String(form.templateId).split('-')[1] || 0) % PALETTES.length], 
+                    category: String(form.templateId).startsWith('Mo') ? 'Modern' : 
+                              String(form.templateId).startsWith('Cy') ? 'Cyberpunk' : 
+                              String(form.templateId).startsWith('Lu') ? 'Luxury' : 
+                              String(form.templateId).startsWith('Mi') ? 'Minimal' : 
+                              String(form.templateId).startsWith('Cr') ? 'Creative' : 
+                              String(form.templateId).startsWith('Zo') ? 'Zodiac' : 'Modern' 
+                  }} />
+                </div>
+              )}
               <div className={`template-preview-style t-${form.templateId || 0}`}>
                 <div className="mock-avatar" style={{ border: `2px solid ${form.coverColor || '#38bdf8'}` }}>
                   {(avatarPreview || form.avatar) ? <img src={avatarPreview || form.avatar} alt="" /> : <DynamicLogo seed={form.displayName || 'U'} size={60} />}

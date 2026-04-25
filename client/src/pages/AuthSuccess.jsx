@@ -26,9 +26,8 @@ const AuthSuccess = () => {
             
             // Redirect dựa trên role/payment status
             if (userData.role === 'admin' || userData.isPaid) {
-              window.location.href = '/dashboard';
+              window.location.href = '/explore';
             } else {
-              // Tài khoản thường được vào trang Explore (Preview)
               window.location.href = '/explore';
             }
           } else {

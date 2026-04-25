@@ -130,6 +130,12 @@ router.get('/check/:orderCode', protect, async (req, res) => {
     if (paymentInfo.status === 'PAID') {
       const FulfillmentService = require('../services/FulfillmentService');
       await FulfillmentService.execute(payment.user, payment._id);
+      
+      // Đảm bảo cập nhật DB nếu Webhook chưa kịp chạy
+      payment.status = 'confirmed';
+      payment.confirmedAt = new Date();
+      await payment.save();
+
       return res.json({ status: 'PAID', message: 'Kích hoạt thành công!' });
     }
 

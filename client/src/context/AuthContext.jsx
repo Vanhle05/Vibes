@@ -11,56 +11,71 @@ export const AuthProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
+  const logout = () => {
+    localStorage.removeItem('vibes_token');
+    localStorage.removeItem('vibes_user');
+    localStorage.removeItem('vibes_last_seen');
+    setUser(null);
+    window.location.href = '/';
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('vibes_token');
     
-    // --- Session Persistence Logic (2 Minutes Window) ---
-    const lastSeen = localStorage.getItem('vibes_last_seen');
-    const now = Date.now();
-    
-    if (token && lastSeen && (now - parseInt(lastSeen)) > 120000) {
-      // More than 2 minutes inactive since last seen -> Force Logout
-      localStorage.removeItem('vibes_token');
-      localStorage.removeItem('vibes_user');
-      localStorage.removeItem('vibes_last_seen');
-      setUser(null);
-      setLoading(false);
-      return;
-    }
+    // --- 2-Minute Inactivity Logic ---
+    const checkSession = () => {
+      const lastSeen = localStorage.getItem('vibes_last_seen');
+      const now = Date.now();
+      if (token && lastSeen && (now - parseInt(lastSeen)) > 120000) {
+        console.log('[AUTH] Session expired (2 min inactivity). Logging out.');
+        logout();
+        return true;
+      }
+      return false;
+    };
 
     if (token) {
-      console.log('[AUTH] Token found, fetching fresh user data...');
+      if (checkSession()) {
+        setLoading(false);
+        return;
+      }
+
       api.get('/auth/me').then(res => {
-        console.log('[AUTH] User data fetched:', res.data.email, 'isPaid:', res.data.isPaid);
         setUser(res.data);
         localStorage.setItem('vibes_user', JSON.stringify(res.data));
         localStorage.setItem('vibes_last_seen', Date.now().toString());
-      }).catch((err) => {
-        console.error('[AUTH] Fetch user failed:', err.response?.data || err.message);
+      }).catch(() => {
         logout();
       }).finally(() => setLoading(false));
     } else {
-      console.log('[AUTH] No token found.');
       setLoading(false);
     }
 
-    // Update lastSeen when user interacts or tab visibility changes
+    // --- Activity Tracking ---
     const updateActivity = () => {
       if (localStorage.getItem('vibes_token')) {
         localStorage.setItem('vibes_last_seen', Date.now().toString());
       }
     };
 
-    window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
+    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+    activityEvents.forEach(event => window.addEventListener(event, updateActivity));
+
+    // Handle tab visibility and close
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        checkSession();
+      } else {
         updateActivity();
       }
-    });
+    };
 
+    window.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('beforeunload', updateActivity);
     
     return () => {
-      window.removeEventListener('visibilitychange', updateActivity);
+      activityEvents.forEach(event => window.removeEventListener(event, updateActivity));
+      window.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('beforeunload', updateActivity);
     };
   }, []);
@@ -86,12 +101,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('vibes_last_seen', Date.now().toString());
     setUser(res.data.user);
     return res.data.user;
-  };
-
-  const logout = () => {
-    localStorage.removeItem('vibes_token');
-    localStorage.removeItem('vibes_user');
-    setUser(null);
   };
 
   const refreshUser = async () => {

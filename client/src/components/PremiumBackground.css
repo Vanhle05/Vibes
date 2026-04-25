@@ -1,0 +1,58 @@
+/* ── BASE BACKGROUND ENGINE ────────────────────────────── */
+.premium-bg-engine {
+  position: fixed;
+  inset: 0;
+  z-index: 0; /* Changed to 0 to match ParticleCanvas visibility */
+  overflow: hidden;
+  background: #030712;
+  pointer-events: none;
+  user-select: none;
+}
+
+.bg-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  z-index: 5;
+}
+
+.bg-overlay-glass {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(3, 7, 18, 0.5) 100%);
+  z-index: 10;
+}
+
+/* 1. Nebula - High Visibility & Fast Motion */
+.bg-nebula { 
+  background: #030712; 
+  height: 100%; 
+  width: 100%; 
+  position: relative;
+  z-index: 1;
+}
+
+.orb { 
+  position: absolute; 
+  border-radius: 50%; 
+  filter: blur(120px); 
+  animation: orb-float 15s infinite alternate ease-in-out; 
+  opacity: 0.7;
+}
+
+.orb-1 { width: 80vw; height: 80vw; background: #6366f1; top: -20%; left: -10%; }
+.orb-2 { width: 70vw; height: 70vw; background: #a855f7; bottom: -20%; right: -10%; animation-delay: -4s; }
+.orb-3 { width: 90vw; height: 90vw; background: #ec4899; top: 10%; left: 10%; animation-delay: -8s; }
+
+/* 11. Deep Night */
+.bg-deep-night { background: #02040a; height: 100%; width: 100%; z-index: 1; }
+.star-field { position: absolute; inset: 0; background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)), radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)); background-repeat: repeat; background-size: 250px 250px; opacity: 0.3; animation: stars-twinkle 4s infinite alternate; }
+.night-glow { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 100vw; height: 60vh; background: radial-gradient(ellipse at center, rgba(30, 58, 138, 0.2) 0%, transparent 70%); filter: blur(120px); }
+
+@keyframes orb-float { 
+  from { transform: translate(0, 0) scale(1); } 
+  to { transform: translate(20vw, 15vh) scale(1.1); } 
+}
+
+@keyframes stars-twinkle { from { opacity: 0.1; } to { opacity: 0.5; } }

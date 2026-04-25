@@ -1,0 +1,242 @@
+.template-visual {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* --- ZODIAC REBORN --- */
+.archetype-zodiac {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zodiac-celestial-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.celestial-star-tiny {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: #fff;
+  border-radius: 50%;
+  animation: star-fade 3s infinite alternate;
+}
+
+.zodiac-symbol-label {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  z-index: 5;
+}
+
+.zodiac-constellation {
+  width: 80%;
+  height: 80%;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.constellation-path-draw {
+  stroke-dashoffset: 1000;
+  animation: draw-path 4s forwards ease-in-out;
+}
+
+.zodiac-main-star {
+  animation: star-glow 2s infinite alternate ease-in-out;
+}
+
+.zodiac-celestial-bg {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 1;
+  animation: sky-rotate 120s linear infinite;
+}
+
+.zodiac-meteors {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shooting-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+  opacity: 0;
+  animation: meteor 8s infinite linear;
+}
+
+.shooting-star::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+
+@keyframes sky-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes meteor {
+  0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  20% { transform: rotate(-45deg) translateX(-200px); opacity: 0; }
+  100% { transform: rotate(-45deg) translateX(-200px); opacity: 0; }
+}
+
+@keyframes star-fade {
+  from { opacity: 0.1; transform: scale(0.5); }
+  to { opacity: 0.8; transform: scale(1.2); }
+}
+
+@keyframes star-glow {
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.5); }
+}
+
+.star-pulse {
+  animation: star-pulse-anim 2s infinite alternate;
+}
+
+@keyframes star-pulse-anim {
+  from { transform: scale(0.8); opacity: 0.1; }
+  to { transform: scale(1.2); opacity: 0.3; }
+}
+
+@keyframes draw-path {
+  to { stroke-dashoffset: 0; }
+}
+
+/* --- MODERN PREMIUM --- */
+.archetype-modern {
+  width: 100%; height: 100%;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.modern-bg-glow {
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.2;
+  animation: soft-pulse 8s infinite alternate ease-in-out;
+}
+
+.modern-shimmer {
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 55%
+  );
+  z-index: 6;
+  animation: shimmer-sweep 6s infinite linear;
+  pointer-events: none;
+}
+
+.modern-glass-stack {
+  position: relative;
+  z-index: 5;
+  width: 120px; height: 120px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.glass-layer {
+  position: absolute;
+  border: 1px solid;
+  border-radius: 2rem;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.layer-1 { width: 100px; height: 140px; transform: rotate(-10deg) translateY(-10px); }
+.layer-2 { width: 120px; height: 100px; transform: rotate(15deg) translateX(10px); }
+
+.glass-core {
+  width: 70px; height: 70px;
+  border-radius: 1.5rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+  animation: float-y 4s infinite ease-in-out;
+}
+
+.glass-content {
+  width: 30px; height: 30px;
+  border: 2px solid;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.modern-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.modern-path-anim {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: draw-path 5s infinite alternate ease-in-out;
+}
+
+@keyframes blob-float {
+  0% { transform: translate(-20px, -20px) scale(1); }
+  100% { transform: translate(20px, 20px) scale(1.2); }
+}
+.archetype-cyberpunk .cyber-grid { position: absolute; inset: 0; background-size: 20px 20px; opacity: 0.1; }
+.cyber-bars { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; display: flex; align-items: flex-end; gap: 2px; padding: 0 10px; opacity: 0.5; }
+.cyber-bar { flex: 1; animation: bar-grow 1s infinite alternate; }
+.cyber-core-box { width: 60px; height: 60px; position: relative; overflow: hidden; }
+.cyber-glitch-line { position: absolute; width: 100%; height: 2px; top: 0; animation: scan-glitch 0.5s infinite linear; }
+.archetype-luxury .luxury-ring-outer { width: 100px; height: 100px; border: 1px solid; border-radius: 50%; position: absolute; animation: ring-spin 20s infinite linear; }
+.luxury-ring-inner { width: 70px; height: 70px; border: 1px solid; border-radius: 50%; position: absolute; animation: ring-spin 10s infinite reverse linear; }
+.luxury-diamond { width: 30px; height: 30px; transform: rotate(45deg); animation: diamond-pulse 3s infinite alternate ease-in-out; }
+.luxury-dust { position: absolute; width: 2px; height: 2px; border-radius: 50%; animation: dust-float 5s infinite alternate; }
+.archetype-minimal .minimal-line-v { width: 1px; height: 100px; opacity: 0.3; }
+.minimal-dot { width: 10px; height: 10px; border-radius: 50%; position: absolute; animation: dot-move 4s infinite alternate ease-in-out; }
+.archetype-creative .creative-blob { width: 120px; height: 120px; opacity: 0.6; filter: blur(20px); animation: blob-morph 10s infinite alternate; }
+.creative-blob-alt { width: 80px; height: 80px; border: 2px solid; position: absolute; border-radius: 50%; animation: blob-morph 8s infinite reverse alternate; }
+
+.visual-label-float { position: absolute; bottom: 1rem; right: 1.5rem; font-size: 0.55rem; font-weight: 900; letter-spacing: 1.5px; opacity: 0.4; text-transform: uppercase; z-index: 10; }
+.visual-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); opacity: 0.1; pointer-events: none; z-index: 11; }
+
+@keyframes float-y { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+@keyframes scan-glitch { 0% { top: 0; } 100% { top: 100%; } }
+@keyframes bar-grow { 0% { transform: scaleY(0.5); } 100% { transform: scaleY(1.5); } }
+@keyframes ring-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes diamond-pulse { from { transform: rotate(45deg) scale(1); opacity: 0.7; } to { transform: rotate(45deg) scale(1.2); opacity: 1; } }
+@keyframes dot-move { 0% { transform: translateY(-40px); } 100% { transform: translateY(40px); } }
+@keyframes blob-morph { 0% { border-radius: 40% 60% 60% 40%; transform: rotate(0deg); } 100% { border-radius: 60% 40% 40% 60%; transform: rotate(180deg); } }

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, Zap, Shield, Mail, Phone, MessageSquare, X, Heart, ShieldCheck } from 'lucide-react';
-import ParticleCanvas from '../components/ParticleCanvas';
-import DynamicLogo from '../components/DynamicLogo';
 import Navbar from '../components/Navbar';
+import DynamicLogo from '../components/DynamicLogo';
+import ParticleCanvas from '../components/ParticleCanvas';
 import vanhIdentity from '../assets/vanh-identity.jpg';
 import './Landing.css';
 
@@ -67,7 +67,7 @@ const Landing = () => {
 
   return (
     <div className="landing">
-      <ParticleCanvas density={20} color="rgba(255, 255, 255, 0.1)" />
+      <ParticleCanvas density={60} />
       <Navbar />
 
       {/* ── CINEMATIC HERO ────────────────────────────── */}

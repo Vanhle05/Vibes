@@ -24,7 +24,7 @@ const Login = () => {
     try {
       const user = await login(form.email, form.password);
       if (user.isPaid || user.role === 'admin') {
-        navigate('/dashboard');
+        navigate('/explore');
       } else {
         navigate('/register');
       }

@@ -67,6 +67,13 @@ const Admin = () => {
     }
   };
 
+  const handleQuickActive = async (u) => {
+    try {
+      await api.put(`/admin/users/${u._id}`, { ...u, isPaid: true, isActive: true });
+      fetchData();
+    } catch (err) { console.error(err); }
+  };
+
   const openEdit = (u) => {
     setFormData({ name: u.name, email: u.email, password: '', isPaid: u.isPaid, isActive: u.isActive });
     setSelectedId(u._id);
@@ -116,16 +123,19 @@ const Admin = () => {
                 <span>Thao tác</span>
              </div>
              {users.map(u => (
-               <div key={u._id} className="user-row">
-                 <span>{u.name}</span>
-                 <span>{u.email}</span>
-                 <span>{u.isPaid ? '✅' : '❌'}</span>
-                 <span>{u.isActive ? '✅' : '❌'}</span>
-                 <div className="row-actions">
+                <div key={u._id} className="user-row">
+                  <span>{u.name}</span>
+                  <span>{u.email}</span>
+                  <span>{u.isPaid ? '✅' : '❌'}</span>
+                  <span>{u.isActive ? '✅' : '❌'}</span>
+                  <div className="row-actions">
+                    <button title="Kích hoạt nhanh" onClick={() => handleQuickActive(u)} style={{ color: (u.isPaid && u.isActive) ? 'var(--vibe-accent)' : 'inherit' }}>
+                      <Zap size={14} fill={(u.isPaid && u.isActive) ? "currentColor" : "none"}/>
+                    </button>
                     <button onClick={() => openEdit(u)}><Edit2 size={14}/></button>
                     <button onClick={() => handleDelete(u._id)}><Trash2 size={14}/></button>
-                 </div>
-               </div>
+                  </div>
+                </div>
              ))}
           </div>
         ) : (

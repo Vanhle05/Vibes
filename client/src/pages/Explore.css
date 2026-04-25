@@ -218,6 +218,7 @@
   position: absolute;
   top: 1rem;
   left: 1rem;
+  letter-spacing: 1px;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   padding: 0.3rem 0.8rem;
@@ -225,7 +226,18 @@
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  z-index: 10;
+}
+
+.template-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.p-card:hover .template-preview-img {
+  transform: scale(1.1);
 }
 
 /* Template Skeleton Animation */
@@ -381,6 +393,142 @@
 .btn-bar-action:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+/* Load More */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+  padding-bottom: 6rem;
+}
+
+.btn-load-more {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 1rem 2.5rem;
+  border-radius: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-load-more:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--vibe-accent);
+  transform: translateY(-5px);
+}
+
+/* Modal Styles */
+.preview-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.preview-modal-content {
+  background: rgba(15, 23, 42, 0.9);
+  max-width: 900px;
+  width: 100%;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-close-modal {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  min-height: 500px;
+}
+
+.preview-image-wrap {
+  position: relative;
+  background: #000;
+}
+
+.preview-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-style-indicator {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+}
+
+.modal-info {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.modal-cat {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--vibe-accent);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.modal-info h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.modal-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.feature-item svg {
+  color: #10b981;
+}
+
+@media (max-width: 900px) {
+  .modal-body { grid-template-columns: 1fr; }
+  .modal-info { padding: 2rem; }
+  .modal-info h2 { font-size: 1.8rem; }
 }
 
 @media (max-width: 768px) {

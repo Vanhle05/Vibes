@@ -17,6 +17,7 @@ const profileSchema = new mongoose.Schema({
   coverColor: { type: String, default: '#6366f1' },
   templateId: { type: Number, default: 0 },
   templateConfig: { type: Object, default: {} },
+  animatedBackground: { type: Number, default: 0 },
   theme: { type: String, enum: ['dark', 'light', 'neon', 'ocean', 'sunset'], default: 'dark' },
   socials: {
     facebook: { type: String, default: '' },

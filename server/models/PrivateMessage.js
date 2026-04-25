@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
-const messageSchema = new mongoose.Schema({
-  user: {
+const privateMessageSchema = new mongoose.Schema({
+  sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  userName: {
-    type: String,
+  receiver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
   text: {
@@ -16,13 +17,10 @@ const messageSchema = new mongoose.Schema({
     trim: true,
     maxlength: 1000
   },
-  isVibes: {
-    type: Boolean,
-    default: true
-  },
-  userRole: {
+  status: {
     type: String,
-    default: 'user'
+    enum: ['sent', 'delivered', 'read'],
+    default: 'sent'
   },
   createdAt: {
     type: Date,
@@ -30,4 +28,4 @@ const messageSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Message', messageSchema);
+module.exports = mongoose.model('PrivateMessage', privateMessageSchema);

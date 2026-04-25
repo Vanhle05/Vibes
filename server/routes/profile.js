@@ -46,7 +46,7 @@ router.get('/me', protect, async (req, res) => {
 // PUT /api/profile/me — update own profile (paid only)
 router.put('/me', protect, paidOnly, async (req, res) => {
   try {
-    const allowed = ['displayName', 'tagline', 'bio', 'phone', 'email', 'location', 'coverColor', 'theme', 'socials', 'skills', 'isPublished'];
+    const allowed = ['displayName', 'tagline', 'bio', 'phone', 'email', 'location', 'coverColor', 'theme', 'socials', 'skills', 'isPublished', 'animatedBackground', 'templateId'];
     const updates = {};
     allowed.forEach(k => { if (req.body[k] !== undefined) updates[k] = req.body[k]; });
 

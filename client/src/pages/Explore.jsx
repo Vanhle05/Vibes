@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { 
   Sparkles, Search, Filter, Lock, Eye, 
@@ -8,54 +8,63 @@ import {
   Cpu, Rocket, Diamond, Wand2
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import PremiumBackground from '../components/PremiumBackground';
+import PremiumHubBadge from '../components/PremiumHubBadge';
+import TemplateVisual from '../components/TemplateVisual';
+import { X, Check } from 'lucide-react';
+import { CATEGORIES, PALETTES, ZODIAC_SYMBOLS } from '../constants/templates.jsx';
 import './Explore.css';
-
-// Cinematic Categories with icons
-const CATEGORIES = [
-  { id: 'Tất cả', name: 'Tất cả', icon: <Sparkles size={16} /> },
-  { id: 'Modern', name: 'Modern', icon: <Zap size={16} /> },
-  { id: 'Cyberpunk', name: 'Cyberpunk', icon: <Cpu size={16} /> },
-  { id: 'Luxury', name: 'Luxury', icon: <Diamond size={16} /> },
-  { id: 'Minimal', name: 'Minimal', icon: <Layout size={16} /> },
-  { id: 'Creative', name: 'Creative', icon: <Wand2 size={16} /> }
-];
-
-const PALETTES = [
-  { name: 'Nebula', from: '#020617', to: '#1e1b4b', accent: '#818cf8', glow: 'rgba(129, 140, 248, 0.5)' },
-  { name: 'Gold Obsidian', from: '#0a0a0a', to: '#171717', accent: '#fbbf24', glow: 'rgba(251, 191, 36, 0.5)' },
-  { name: 'Aurora', from: '#064e3b', to: '#022c22', accent: '#34d399', glow: 'rgba(52, 211, 153, 0.5)' },
-  { name: 'Blood Moon', from: '#450a0a', to: '#7f1d1d', accent: '#f87171', glow: 'rgba(248, 113, 113, 0.5)' },
-  { name: 'Deep Space', from: '#0f172a', to: '#020617', accent: '#38bdf8', glow: 'rgba(56, 189, 248, 0.5)' },
-  { name: 'Amethyst', from: '#2e1065', to: '#4c1d95', accent: '#a78bfa', glow: 'rgba(167, 139, 250, 0.5)' }
-];
 
 const Explore = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [filter, setFilter] = useState('Tất cả');
   const [search, setSearch] = useState('');
+  const [previewTemplate, setPreviewTemplate] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(24);
+
+  const isPremium = user?.isPaid || user?.role === 'admin';
 
   const templates = useMemo(() => {
     const list = [];
-    for (let i = 1; i <= 100; i++) {
-      const palette = PALETTES[i % PALETTES.length];
-      const category = CATEGORIES[1 + (i % (CATEGORIES.length - 1))];
-      list.push({
-        id: i,
-        name: `${palette.name} Edition #${i}`,
-        category: category.id,
-        palette,
-        isPremium: true,
-        previewUrl: `https://images.unsplash.com/photo-${1500000000000 + i}?auto=format&fit=crop&w=400&h=250`
-      });
-    }
+    const mainCategories = CATEGORIES.filter(c => c.id !== 'Tất cả');
+    
+    mainCategories.forEach(cat => {
+      const count = cat.id === 'Zodiac' ? 120 : 100;
+      for (let i = 1; i <= count; i++) {
+        const paletteIndex = (i + cat.id.length) % PALETTES.length;
+        const palette = PALETTES[paletteIndex];
+        
+        let name = `${cat.name} ${palette.name} #${i}`;
+        if (cat.id === 'Zodiac') {
+          const sign = ZODIAC_SYMBOLS[(i - 1) % 12];
+          name = sign.name;
+        }
+
+        list.push({
+          id: `${cat.id.substring(0, 2)}-${i}`,
+          numericId: i,
+          name,
+          category: cat.id,
+          palette,
+          isPremium: true
+        });
+      }
+    });
     return list;
   }, []);
+
+  // Reset visible count when filter changes
+  useEffect(() => {
+    setVisibleCount(24);
+  }, [filter]);
 
   const filteredTemplates = templates.filter(t => 
     (filter === 'Tất cả' || t.category === filter) &&
     t.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const visibleTemplates = filteredTemplates.slice(0, visibleCount);
 
   const handleUseTemplate = (template) => {
     if (!user || (!user.isPaid && user.role !== 'admin')) {
@@ -66,6 +75,7 @@ const Explore = () => {
 
   return (
     <div className="explore-page">
+      <PremiumBackground id={11} />
       <div className="explore-grain"></div>
       <Navbar />
       
@@ -76,9 +86,13 @@ const Explore = () => {
             animate={{ opacity: 1, y: 0 }}
             className="hero-inner"
           >
-            <div className="premium-label">
-              <Crown size={14} /> <span>100+ Exclusive Designs</span>
-            </div>
+            {isPremium ? (
+              <PremiumHubBadge className="mb-4" />
+            ) : (
+              <div className="premium-label">
+                <Crown size={14} /> <span>100+ Exclusive Designs</span>
+              </div>
+            )}
             <h1>Kiến tạo <span className="text-gradient">Đẳng cấp số</span></h1>
             <p>Hệ sinh thái giao diện cao cấp dành riêng cho cộng đồng Vibes.</p>
           </motion.div>
@@ -113,7 +127,7 @@ const Explore = () => {
 
       <main className="container explore-main">
         <div className="premium-grid">
-          {filteredTemplates.map((t, idx) => (
+          {visibleTemplates.map((t, idx) => (
             <motion.div 
               key={t.id} 
               className="p-card"
@@ -121,24 +135,15 @@ const Explore = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: (idx % 12) * 0.05 }}
             >
-              <div className="p-card-media" style={{ background: `linear-gradient(135deg, ${t.palette.from}, ${t.palette.to})` }}>
+              <div className="p-card-media">
                  <div className="p-card-overlay">
-                    <button className="btn-preview-circle" onClick={() => alert('Đang xem bản xem trước siêu nét...')}>
-                       <Eye size={20} />
+                    <button className="btn-preview-circle" onClick={() => setPreviewTemplate(t)}>
+                       <Eye size={24} />
                     </button>
                  </div>
                  <div className="p-card-tag">{t.category}</div>
                  
-                 {/* Visual Template Structure Simulation */}
-                 <div className="template-skeleton">
-                    <div className="skel-logo" style={{ background: t.palette.accent }}></div>
-                    <div className="skel-line" style={{ width: '60%' }}></div>
-                    <div className="skel-line" style={{ width: '40%' }}></div>
-                    <div className="skel-dots">
-                       <div className="skel-dot" style={{ background: t.palette.accent }}></div>
-                       <div className="skel-dot" style={{ background: t.palette.accent }}></div>
-                    </div>
-                 </div>
+                 <TemplateVisual template={t} />
               </div>
               
               <div className="p-card-content">
@@ -164,26 +169,62 @@ const Explore = () => {
         </div>
       </main>
 
-      {(!user || (!user.isPaid && user.role !== 'admin')) && (
-        <motion.div 
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          className="p-upgrade-bar"
-        >
-           <div className="container bar-inner">
-             <div className="bar-info">
-               <Crown size={24} color="#fbbf24" />
-               <div>
-                 <h4>Nâng cấp lên Vibes Premium</h4>
-                 <p>Sở hữu toàn bộ 100+ template và các tính năng đặc quyền ngay hôm nay.</p>
-               </div>
-             </div>
-             <Link to="/register" className="btn-bar-action">
-               Kích hoạt ngay <ArrowRight size={18} />
-             </Link>
-           </div>
-        </motion.div>
-      )}
+      {/* Template Preview Modal */}
+      <AnimatePresence>
+        {previewTemplate && (
+          <motion.div 
+            className="preview-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setPreviewTemplate(null)}
+          >
+            <motion.div 
+              className="preview-modal-content glass-card"
+              initial={{ scale: 0.9, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 50 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button className="btn-close-modal" onClick={() => setPreviewTemplate(null)}>
+                <X size={24} />
+              </button>
+              
+              <div className="modal-body">
+                <div className="preview-image-wrap">
+                  <TemplateVisual template={previewTemplate} />
+                  <div className="preview-style-indicator" style={{ background: previewTemplate.palette.accent }}></div>
+                </div>
+                
+                <div className="modal-info">
+                  <div className="modal-header-text">
+                    <div className="modal-cat">{previewTemplate.category}</div>
+                    <h2>{previewTemplate.name}</h2>
+                  </div>
+                  
+                  <div className="modal-features">
+                    <div className="feature-item"><Check size={16} /> Bố cục đáp ứng</div>
+                    <div className="feature-item"><Check size={16} /> Hiệu ứng chuyển động</div>
+                    <div className="feature-item"><Check size={16} /> Tùy chỉnh màu sắc</div>
+                  </div>
+
+                  <div className="modal-actions">
+                    {isPremium ? (
+                      <button className="btn-vibe-primary w-full" onClick={() => handleUseTemplate(previewTemplate)}>
+                        Sử dụng mẫu này <ArrowRight size={18} />
+                      </button>
+                    ) : (
+                      <Link to="/register" className="btn-vibe-primary w-full">
+                        Nâng cấp để sử dụng <Crown size={18} />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

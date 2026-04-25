@@ -15,6 +15,7 @@ import Community from './pages/Community';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import DataDeletion from './pages/DataDeletion';
 import { ThemeProvider } from './context/ThemeContext';
+import UpgradeNotification from './components/UpgradeNotification';
 
 const ErrorFallback = ({ error }) => (
   <div style={{ padding: '2rem', background: '#030712', color: '#fff', height: '100vh' }}>
@@ -41,13 +42,13 @@ const AdminRoute = ({ children }) => {
 const GuestRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (user && user.isPaid) return <Navigate to="/dashboard" replace />;
+  if (user && user.isPaid) return <Navigate to="/explore" replace />;
   return children;
 };
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Landing />} />
+    <Route path="/" element={<GuestRoute><Landing /></GuestRoute>} />
     <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
     <Route path="/register" element={<Register />} />
     <Route path="/auth/success" element={<AuthSuccess />} />
@@ -69,6 +70,7 @@ const App = () => (
       <ThemeProvider>
         <AuthProvider>
           <AppRoutes />
+          <UpgradeNotification />
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
