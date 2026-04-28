@@ -9,27 +9,20 @@ const AuthSuccess = () => {
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
-      // Gọi API lấy thông tin user ngay để verify trước khi lưu
+      // Xóa token khỏi URL NGAY LẬP TỨC để không lộ qua browser history / referrer
+      window.history.replaceState({}, document.title, '/auth/success');
+
       const verifyAndRedirect = async () => {
         try {
-          // Gửi token trong header tạm thời để lấy user
           const response = await fetch('/api/auth/me', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
           if (response.ok) {
             const userData = await response.json();
-            
-            // Lưu cả token và user cùng lúc để trạng thái nhất quán
             localStorage.setItem('vibes_token', token);
             localStorage.setItem('vibes_user', JSON.stringify(userData));
-            
-            // Redirect dựa trên role/payment status
-            if (userData.role === 'admin' || userData.isPaid) {
-              window.location.href = '/explore';
-            } else {
-              window.location.href = '/explore';
-            }
+            window.location.href = '/explore';
           } else {
             navigate('/login');
           }

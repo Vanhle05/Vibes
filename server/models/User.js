@@ -31,6 +31,22 @@ const userSchema = new mongoose.Schema({
     enum: ['vibes', 'google', 'facebook'],
     default: 'vibes'
   },
+  googleId: {
+    type: String,
+    sparse: true,
+    unique: true,
+    select: false
+  },
+  facebookId: {
+    type: String,
+    sparse: true,
+    unique: true,
+    select: false
+  },
+  lastLogin: {
+    type: Date,
+    default: null
+  },
   isActive: {
     type: Boolean,
     default: function() {

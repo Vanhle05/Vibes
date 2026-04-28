@@ -93,11 +93,6 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng nhập email và mật khẩu' });
 
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-    
-    // Debug specific user
-    if (email.toLowerCase() === 'gotosleep344@gmail.com') {
-      console.log('[DEBUG-LOGIN] User found:', !!user, 'Method:', user?.loginMethod, 'HashedPass:', !!user?.password);
-    }
 
     if (!user) {
       return res.status(401).json({ message: 'Email chưa được đăng ký' });
@@ -151,11 +146,19 @@ router.get('/google/callback', (req, res, next) => {
   const callbackURL = `${process.env.BACKEND_URL}/api/auth/google/callback`;
 
   passport.authenticate('google', { 
-    failureRedirect: '/login',
+    failureRedirect: '/login?error=google_failed',
     callbackURL 
-  }, (err, user) => {
-    if (err || !user) return res.redirect('/login');
+  }, (err, user, info) => {
+    if (err) {
+      console.error('[Google OAuth Error]', err.message);
+      return res.redirect('/login?error=oauth_error');
+    }
+    if (!user) {
+      const msg = encodeURIComponent(info?.message || 'Xác thực Google thất bại');
+      return res.redirect(`/login?error=${msg}`);
+    }
     const token = signToken(user._id);
+    // Xóa token khỏi URL ngay sau khi xác thực - chỉ dùng 1 lần
     res.redirect(`/auth/success?token=${token}`);
   })(req, res, next);
 });
@@ -174,41 +177,25 @@ router.get('/facebook/callback', (req, res, next) => {
   const callbackURL = `${process.env.BACKEND_URL}/api/auth/facebook/callback`;
 
   passport.authenticate('facebook', { 
-    failureRedirect: '/login',
+    failureRedirect: '/login?error=facebook_failed',
     callbackURL
-  }, (err, user) => {
-    if (err || !user) return res.redirect('/login');
+  }, (err, user, info) => {
+    if (err) {
+      console.error('[Facebook OAuth Error]', err.message);
+      return res.redirect('/login?error=oauth_error');
+    }
+    if (!user) {
+      const msg = encodeURIComponent(info?.message || 'Xác thực Facebook thất bại');
+      return res.redirect(`/login?error=${msg}`);
+    }
     const token = signToken(user._id);
     res.redirect(`/auth/success?token=${token}`);
   })(req, res, next);
 });
 
-router.post('/social-login', async (req, res) => {
-  try {
-    const { name, email, platform } = req.body;
-    let user = await User.findOne({ email: email.toLowerCase() });
-
-    if (!user) {
-      // Tạo user mới nếu chưa tồn tại (mặc định chưa thanh toán)
-      user = await User.create({
-        name,
-        email: email.toLowerCase(),
-        password: require('crypto').randomBytes(8).toString('hex'), // Random pass
-        loginMethod: platform,
-        isActive: true, // Cho phép vào Explore
-        isPaid: false
-      });
-      await Profile.create({ user: user._id, email: user.email, displayName: user.name });
-    }
-
-    const token = signToken(user._id);
-    res.json({
-      token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, isPaid: user.isPaid, loginMethod: user.loginMethod }
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
-  }
+// Endpoint này chỉ dùng cho mục đích tương thích cũ - không khuyến khích sử dụng
+router.post('/social-login', require('../middleware/auth').protect, async (req, res) => {
+  return res.status(410).json({ message: 'Đường dẫn này không còn được hỗ trợ. Hãy dùng OAuth flow.' });
 });
 
 module.exports = router;

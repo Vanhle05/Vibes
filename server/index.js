@@ -78,28 +78,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString(), version: '1.0.0' });
 });
 
-// Diagnostic route
-app.get('/api/diag', async (req, res) => {
+// Diagnostic route - protected to admin only
+app.get('/api/diag', require('./middleware/auth').protect, require('./middleware/auth').adminOnly, async (req, res) => {
   try {
     const mongoose = require('mongoose');
-    const User = require('./models/User');
-    const email = req.query.email;
-    let userInfo = null;
-    
-    if (email) {
-      const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-      if (user) {
-        userInfo = {
-          found: true,
-          method: user.loginMethod,
-          hasPass: !!user.password,
-          passLen: user.password ? user.password.length : 0
-        };
-      } else {
-        userInfo = { found: false };
-      }
-    }
-
     res.json({
       env: {
         NODE_ENV: process.env.NODE_ENV,
@@ -112,21 +94,11 @@ app.get('/api/diag', async (req, res) => {
       db: {
         readyState: mongoose.connection.readyState,
         host: mongoose.connection.host
-      },
-      user: userInfo
+      }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-// Owner info endpoint (public)
-app.get('/api/owner', (req, res) => {
-  res.json({
-    name: process.env.OWNER_NAME,
-    email: process.env.OWNER_EMAIL,
-    phone: process.env.OWNER_PHONE,
-  });
 });
 
 // 404 handler

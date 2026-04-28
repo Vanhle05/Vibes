@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   Mail, Lock, ArrowRight, Loader2, Heart, 
@@ -12,10 +12,26 @@ import './Auth.css';
 const Login = () => {
   const { login, socialLogin } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Đọc lỗi OAuth từ URL param (vd: /login?error=...)
+  useEffect(() => {
+    const oauthError = searchParams.get('error');
+    if (oauthError) {
+      const errorMessages = {
+        google_failed: 'Đăng nhập Google thất bại. Vui lòng thử lại.',
+        facebook_failed: 'Đăng nhập Facebook thất bại. Vui lòng thử lại.',
+        oauth_error: 'Có lỗi xảy ra trong quá trình xác thực. Vui lòng thử lại.',
+      };
+      setError(errorMessages[oauthError] || decodeURIComponent(oauthError));
+      // Xóa error khỏi URL
+      window.history.replaceState({}, document.title, '/login');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
